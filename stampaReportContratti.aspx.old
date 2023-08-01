@@ -1,0 +1,196 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="stampaReportContratti.aspx.vb" Inherits="stampaReportContratti" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title></title>
+    <% Response.ContentType = "application/vnd.ms-excel"%>
+    <% Response.AddHeader("Content-Disposition", "attachment;filename=report_contratti.xls")%>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+      <%
+          Dim condizione As String = Session("condizione")
+          Session("condizione") = ""
+
+          'Dim sqlStr As String = "SELECT contratti.id, contratti.num_contratto, conducenti.cognome As cognome_conducente, conducenti.nome As nome_conducente," &
+          '    "contratti.giorni, conducenti.email, conducenti.cell, conducenti.sesso, contratti.eta_primo_guidatore, conducenti.Data_Nascita, conducenti.codfis, contratti_conducenti.city, " &
+          '    "nazioni.nazione " &
+          '    "FROM contratti WITH(NOLOCK) " &
+          '    "LEFT JOIN stazioni AS stazioni1 WITH(NOLOCK) ON contratti.id_stazione_uscita=stazioni1.id " &
+          '    "LEFT JOIN stazioni As stazioni2 WITH(NOLOCK) ON contratti.id_stazione_rientro=stazioni2.id " &
+          '    "LEFT JOIN stazioni As stazioni3 WITH(NOLOCK) ON contratti.id_stazione_presunto_rientro=stazioni3.id " &
+          '    "LEFT JOIN veicoli WITH(NOLOCK) ON contratti.id_veicolo=veicoli.id " &
+          '    "LEFT JOIN conducenti WITH(NOLOCK) ON contratti.id_primo_conducente=conducenti.id_conducente " &
+          '    "LEFT JOIN contratti_conducenti WITH(NOLOCK) ON contratti.num_contratto=contratti_conducenti.num_contratto AND num_conducente=1 " &
+          '    "LEFT JOIN nazioni WITH(NOLOCK) ON conducenti.nazione=nazioni.id_nazione " &
+          '    "LEFT JOIN contratti_status WITH(NOLOCK) ON contratti.status=contratti_status.id " &
+          '    "LEFT JOIN clienti_tipologia WITH(NOLOCK) ON contratti.id_fonte=clienti_tipologia.id  WHERE contratti.attivo='1' " & condizione
+          
+          Dim sqlStr As String = "select contratti.id,contratti.num_contratto, contratti.id_primo_conducente, CONDUCENTI.COGNOME As cognome_conducente, CONDUCENTI.nome nome_conducente, CONDUCENTI.EMAIL, CONDUCENTI.Telefono, CONDUCENTI.cell, CONDUCENTI.SESSO,contratti.eta_primo_guidatore, CONDUCENTI.Data_Nascita, CONDUCENTI.CODFIS, CONDUCENTI.City, CONDUCENTI.NAZIONE as IdNazione, nazioni.NAZIONE, contratti.giorni from  contratti,CONDUCENTI,nazioni WITH(NOLOCK) where contratti.id_primo_conducente = CONDUCENTI.ID_CONDUCENTE and CONDUCENTI.NAZIONE = nazioni.ID_NAZIONE and contratti.attivo='1' " & condizione
+          'Response.Write(sqlStr)
+      %>
+      <table border="1" cellpadding="1" cellspacing="1">
+         <tr>
+           <td align="left" style="color: #FFFFFF" bgcolor="#19191b" colspan="15">
+              <b>Report Contratti</b>
+           </td>
+         </tr>
+       </table>
+        <table border="1" cellpadding="1" cellspacing="1">
+           <tr>
+           <td align="left" bgcolor="white" style="font-size:12px" >
+              Num-Contratto
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Cognome
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Nome
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Mail
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Telefono
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Cellulare
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Sesso
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Eta'
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Data Nascita
+            </td>
+            
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Codice Fiscale
+            </td>            
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Nazione di residenza
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Giorni Noleggio
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              T/KM
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Totale Extra
+            </td>
+            <td align="left" bgcolor="white" style="font-size:12px" >
+              Totale Tariffa
+            </td>
+          </tr>
+        
+        <%
+            Dim Dbc As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
+            Dbc.Open()
+            Dim Dbc2 As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
+            Dbc2.Open()
+            Dim Cmd As New Data.SqlClient.SqlCommand(sqlStr, Dbc)
+            Dim Cmd2 As New Data.SqlClient.SqlCommand("", Dbc2)
+            Dim oRS As Data.SqlClient.SqlDataReader
+            oRS = Cmd.ExecuteReader()
+
+            While oRS.Read()
+                %>
+                 <tr>
+                 <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%= oRS("num_contratto")%>
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%=oRS("cognome_conducente")%>
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%=oRS("nome_conducente")%>
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%=oRS("email") & ""%> 
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                     <%  If Mid(oRS("telefono"), 1, 1) = "0" Or Mid(oRS("telefono"), 1, 1) = "+" Then%>
+                            <%= "'" & oRS("telefono") & ""%>
+                    <%
+                        Else %>
+                            <%= oRS("telefono") & ""%>
+                    <%
+                        End If
+                    %>                           
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                    <%  If Mid(oRS("cell"), 1, 1) = "0" Then %>
+                            <%= "'" & oRS("cell") & ""%>
+                    <%
+                        Else %>
+                            <%= oRS("cell") & ""%>
+                    <%
+                        End If
+                    %>                        
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%=oRS("sesso") & ""%>
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%=oRS("eta_primo_guidatore") & ""%>
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%= FormatDateTime(oRS("data_nascita"), vbShortDate) & ""%>
+                  </td>
+
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%=oRS("codfis") & ""%>
+                  </td>                                     
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%=oRS("nazione") & ""%>
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%=oRS("giorni")%>
+                  </td>
+                 
+             <%
+                
+                 sqlStr = "SELECT ISNULL((contratti_costi.imponibile_scontato + contratti_costi.iva_imponibile_scontato),0) FROM contratti_costi WITH(NOLOCK) WHERE contratti_costi.id_documento=" & oRS("id") & " AND contratti_costi.nome_costo='Valore Tariffa'"
+                 Cmd2 = New Data.SqlClient.SqlCommand(sqlStr, Dbc2)
+                 Dim valore_tariffa As String = Cmd2.ExecuteScalar
+                 
+                 sqlStr = "SELECT ISNULL((contratti_costi.imponibile_scontato + contratti_costi.iva_imponibile_scontato),0) FROM contratti_costi WITH(NOLOCK) WHERE contratti_costi.id_documento=" & oRS("id") & " AND contratti_costi.nome_costo='TOTALE'"
+                 Cmd2 = New Data.SqlClient.SqlCommand(sqlStr, Dbc2)
+                 Dim totale As String = Cmd2.ExecuteScalar
+                 
+                 Dim accessori As String = CDbl(totale) - CDbl(valore_tariffa)
+                 
+               %>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                       <%= FormatNumber(CDbl(valore_tariffa), 2)%>
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                        <%= FormatNumber(CDbl(accessori), 2)%>
+                  </td>
+                  <td align="left" bgcolor="white" style="font-size:12px" >
+                       <%= FormatNumber(CDbl(totale), 2)%>
+                  </td>
+                 </tr>
+               <%
+                   
+             End While
+
+            Dbc.Close()
+            Dbc.Dispose()
+            Dbc = Nothing
+            Dbc2.Close()
+            Dbc2.Dispose()
+            Dbc2 = Nothing
+        %>
+        </table>
+    </div>
+    </form>
+</body>
+</html>
+
