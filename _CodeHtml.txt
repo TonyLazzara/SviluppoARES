@@ -1,0 +1,73 @@
+﻿<a onclick="Calendar.show(document.getElementById('<%=tx_DataDa.ClientID%>'), '%d/%m/%Y', false)"> 
+
+ <link rel="StyleSheet" type="text/css" href="../css/style.css" /> 
+
+If Request.Cookies("SicilyRentCar") Is Nothing Then
+    Response.Redirect("LogIn.aspx")
+End If
+
+Dim sqlStr As String = ""
+
+Response.Write("aggiungi_accessorio_pieno_caburante error :  <br/>" & ex.Message & "<br/>" & SqlStr & "<br/>")
+
+HttpContext.Current.Response.Write("error  : <br/>" & ex.Message & "<br/>" & sqla & "<br/>")
+
+ HttpContext.Current.Response.Write("error   : <br/>" & ex.Message & "<br/>"  & "<br/>")
+
+ HttpContext.Current.Response.Write("error funzioni_comuni fffff  : <br/>" & ex.Message & "<br/>" & sqla & "<br/>")
+
+
+
+ Server.MapPath("\prenotazioni\" & "prenotazione" & "_" & lblNumPreventivo.Text & ".pdf"))
+
+  'Invia l'e-mail
+        Dim sm As New sendmailcls
+        Try
+            sm.sendmail(email_stazione, "Sicily Rent Car", email_stazione, oggmail, corpoMessaggio, True, fileallegato)
+            'client.Send(mail)
+            Libreria.genUserMsgBox(Me, "E-Mail inviata correttamente.")
+        Catch ex As Exception
+            Libreria.genUserMsgBox(Me, "Si è verificato un errore nell'invio della mail.")
+        End Try
+
+        'invia email al cliente
+        Try
+            'client.Send(mail)
+            'mail_conducente = "dimatteo@xinformatica.it"    'SOLO TEST
+            sm.sendmail(email_stazione, "Sicily Rent Car", mail_conducente, oggmail, corpoMessaggio, True, fileallegato)
+            Libreria.genUserMsgBox(Me, "E-Mail inviata correttamente.")
+        Catch ex As Exception
+            Libreria.genUserMsgBox(Me, "Si è verificato un errore nell'invio della mail al cliente.")
+        End Try
+
+
+            Dim ris As Boolean = False
+        Try
+            Dim Dbc As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
+            Dbc.Open()
+
+            Dim sqlA As String = "select broker from clienti_tipologia where [id]='" & idtipo & "'"
+
+            Dim Cmd As New Data.SqlClient.SqlCommand(sqlA, Dbc)
+
+            Dim Rs As Data.SqlClient.SqlDataReader
+            Rs = Cmd.ExecuteReader()
+
+            If Rs.HasRows Then
+                Rs.Read()
+                If Rs!broker = 1 Then ris = True
+            End If
+
+            Rs.Close()
+            Cmd.Dispose()
+            Cmd = Nothing
+            Dbc.Close()
+            Dbc.Dispose()
+            Dbc = Nothing
+
+            Return ris
+
+        Catch ex As Exception
+            Return False
+
+        End Try
