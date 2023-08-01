@@ -258,7 +258,6 @@
             &nbsp;&nbsp;<b>Stazione: </b><asp:Label ID="lb_stazione" runat="server" Text="" ></asp:Label>
             &nbsp;&nbsp;<b>Km: </b><asp:Label ID="lb_km" runat="server" Text="" ></asp:Label>    
             <asp:Label ID="IDdelVeicolo" runat="server" Text="ID" Visible="False" ></asp:Label>  
-            &nbsp;&nbsp;<asp:Label ID="lblDanniNew" runat="server" Text="" Visible="true" ></asp:Label>  
         </td>
     </tr>
 </table>
@@ -291,14 +290,12 @@
   <tr runat="server">
     <td id="Td1" runat="server" valign="top">
         
-        <asp:Image ID="img_fronte" runat="server"  ImageUrl="~/MappaturaDanni/Immagini/" style="position:relative;" />
+        <asp:Image ID="img_fronte" runat="server"  ImageUrl="~/images/SchemaAuto.gif" style="position:relative;" />
 
     </td>
-  </tr>
-  <tr>
     <td id="Td9" style="vertical-align:top;" runat="server">
         <asp:ListView ID="lv_elenco_danni_F" runat="server" 
-            DataSourceID="sqlDanniMappati_F" DataKeyNames="id_danno" Visible="False">
+            DataSourceID="sqlDanniMappati_F" DataKeyNames="id_danno">
               <ItemTemplate>
                   <tr style="background-color:#DCDCDC; color: #000000;">
                        <td>
@@ -374,11 +371,9 @@
                                        style="background-color: #FFFFFF;border-collapse: collapse;border-color: #999999;border-style:none;border-width:0px;font-family: Verdana, Arial, Helvetica, sans-serif;" width="100%">
                                 <tr id="Tr3" runat="server" style="color: #FFFFFF" class="sfondo_rosso">
                                       <th id="Th7" runat="server">
-                                          N°
-                                      </th>                                      
+                                          N°</th>
                                       <th id="Th1" runat="server">
-                                          Posizione
-                                      </th>
+                                          Posizione</th>
                                       <th id="Th2" runat="server">
                                           Tipologia</th>
                                       <th id="Th3" runat="server">
@@ -386,98 +381,7 @@
                                       <th id="Th9" runat="server">
                                           Foto</th>                                       
                                       <th id="th_lente" runat="server">
-                                      </th>
-                                  </tr>
-                                  <tr ID="itemPlaceholder" runat="server">
-                                  </tr>
-                              </table>
-                          </td>
-                      </tr>
-                  </table>
-              </LayoutTemplate>
-          </asp:ListView>
-
-         <asp:ListView ID="lv_elenco_danni_F_new" runat="server" 
-            DataSourceID="sqlDanniMappati_F" DataKeyNames="id_danno" Visible="False">
-              <ItemTemplate>
-                  <tr style="background-color:#DCDCDC; color: #000000;">
-                       <td>
-                         <asp:Label ID="Label5" runat="server" Text='<%# Eval("indice") %>'/>
-                         <asp:Label ID="lb_id_danno" runat="server" Text='<%# Eval("id_danno") %>' Visible="false" />
-                         <asp:Label ID="lb_id_evento_apertura" runat="server" Text='<%# Eval("id_evento_apertura") %>' Visible="false" />
-                         <asp:Label ID="lb_id_posizione_danno" runat="server" Text='<%# Eval("id_posizione_danno") %>' Visible="false" />
-                         <asp:Label ID="lb_des_id_posizione_danno" runat="server" Text='<%# Eval("des_id_posizione_danno") %>' Visible="false" />
-                       </td>                      
-                       <td>
-                          <asp:Label ID="lb_id_tipo_danno" runat="server" Text='<%# Eval("id_tipo_danno") %>' Visible="false" />
-                          <asp:Label ID="lb_des_id_tipo_danno" runat="server" Text='<%# Eval("des_id_tipo_danno") %>' />
-                      </td>
-                      <td>
-                          <asp:Label ID="lb_id_entita_danno" runat="server" Text='<%# Eval("entita_danno") %>' Visible="false" />
-                          <asp:Label ID="lb_des_id_entita_danno" runat="server" Text='' />
-                      </td>
-                      <!-- Tony 16/06/2022 -->
-                      <td id="Td15" align="center" width="40px" runat="server" visible="True">
-                          <asp:ImageButton ID="imgBtnFoto" runat="server" ImageUrl="/images/lente.png" style="width: 16px" CommandName="lentefoto"/>
-                      </td>
-                      <!-- FINE -->                      
-                      <td id="Td4" align="center" width="40px" runat="server" visible='<%# lb_th_lente_storico.Text %>'>
-                          <asp:ImageButton ID="lente" runat="server" ImageUrl="/images/lente.png" style="width: 16px" CommandName="lente"/>
-                      </td>
-                  </tr>
-              </ItemTemplate>
-              <AlternatingItemTemplate>
-                  <tr style="">
-                      <td>
-                         <asp:Label ID="Label5" runat="server" Text='<%# Eval("indice") %>'/>
-                         <asp:Label ID="lb_id_danno" runat="server" Text='<%# Eval("id_danno") %>' Visible="false" />
-                         <asp:Label ID="lb_id_evento_apertura" runat="server" Text='<%# Eval("id_evento_apertura") %>' Visible="false" />
-                         <asp:Label ID="Label57" runat="server" Text='<%# Eval("id_posizione_danno") %>' Visible="false" />
-                         <asp:Label ID="Label58" runat="server" Text='<%# Eval("des_id_posizione_danno") %>' Visible="false" />
-                       </td>                       
-                       <td>
-                          <asp:Label ID="lb_id_tipo_danno" runat="server" Text='<%# Eval("id_tipo_danno") %>' Visible="false" />
-                          <asp:Label ID="lb_des_id_tipo_danno" runat="server" Text='<%# Eval("des_id_tipo_danno") %>' />
-                      </td>
-                      <td>
-                          <asp:Label ID="lb_id_entita_danno" runat="server" Text='<%# Eval("entita_danno") %>' Visible="false" />
-                          <asp:Label ID="lb_des_id_entita_danno" runat="server" Text='' />
-                      </td>
-                      <!-- Tony 16/06/2022 -->
-                      <td id="Td15" align="center" width="40px" runat="server" visible="True">
-                          <asp:ImageButton ID="imgBtnFoto" runat="server" ImageUrl="/images/lente.png" style="width: 16px" CommandName="lentefoto"/>
-                      </td>
-                      <!-- FINE -->
-                      <td id="Td4" align="center" width="40px" runat="server" visible='<%# lb_th_lente_storico.Text %>'>
-                          <asp:ImageButton ID="lente" runat="server" ImageUrl="/images/lente.png" style="width: 16px" CommandName="lente"/>
-                      </td>
-                  </tr>
-              </AlternatingItemTemplate>
-              <EmptyDataTemplate>
-                  <table id="Table1" runat="server" style="">
-                      <tr style="">
-                          <td>
-                              Nessun danno aperto sulla vista fronte.
-                          </td>
-                      </tr>
-                  </table>
-              </EmptyDataTemplate>
-              <LayoutTemplate>
-                  <table id="Table1" runat="server" width="100%">
-                      <tr id="Tr1" runat="server">
-                          <td id="Td1" runat="server">
-                              <table ID="itemPlaceholderContainer" runat="server" border="1" 
-                                       style="background-color: #FFFFFF;border-collapse: collapse;border-color: #999999;border-style:none;border-width:0px;font-family: Verdana, Arial, Helvetica, sans-serif;" width="100%">
-                                <tr id="Tr3" runat="server" style="color: #FFFFFF" class="sfondo_rosso">
-                                      <th id="Th7" runat="server">
-                                          N°
-                                      </th>                                                                            
-                                      <th id="Th2" runat="server">
-                                          Tipologia</th>
-                                      <th id="Th3" runat="server">
-                                          Entità</th>                                      
-                                      <th id="Th9" runat="server">
-                                          Foto</th>                                                                             
+                                          </th>
                                   </tr>
                                   <tr ID="itemPlaceholder" runat="server">
                                   </tr>

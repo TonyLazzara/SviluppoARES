@@ -11,11 +11,18 @@ Partial Class gestione_danni_SelezionaLetteraRDS
         Else
             lb_id_evento.Text = Session("StampaLetteraRDS_id_evento")
         End If
-        Trace.Write("gestione_danni_SelezionaLetteraRDS.Page_Load " & lb_id_evento.Text)
+        'Trace.Write("gestione_danni_SelezionaLetteraRDS.Page_Load " & lb_id_evento.Text)
         If lb_id_evento.Text = "" Then
             Libreria.genUserMsgBox(Page, "Parametro non corretto." & vbCrLf & "Impossibile stampare.")
         End If
-        'Libreria.genUserMsgBox(Page, lb_id_evento.Text)
+
+        If Session("RDS_id_evento") Is Nothing Then
+            id_evento_apertura.Text = Request.QueryString("id_evento_apertura") & ""
+        Else
+            id_evento_apertura.Text = Session("RDS_id_evento")
+        End If
+        
+        'Libreria.genUserMsgBox(Page, "Session3 " & id_evento_apertura.Text)
     End Sub
 
     Protected Function getComuneAres(id_comune As Integer) As String
@@ -75,14 +82,17 @@ Partial Class gestione_danni_SelezionaLetteraRDS
                             If linguaggio = tipo_linguaggio_rds.italiano Then
                                 If tipo_lettera And tipo_lettera_rds.NoKasko Then
                                     .importo = Format(mio_evento.importo, "0.00")
+                                    .importo = Format(mio_evento.totale / 1.22, "0.00")
                                 Else
-                                    .importo = Format(mio_evento.importo, "0.00") '& " + I.V.A."    'tolto perchè già presente nel testo del PDF - salvo 24.11.2022
+                                    .importo = Format(mio_evento.totale / 1.22, "0.00") '& " + I.V.A."    'tolto perchè già presente nel testo del PDF - salvo 24.11.2022                                                                                                            
                                 End If
                             ElseIf linguaggio = tipo_linguaggio_rds.inglese Then
                                 If tipo_lettera And tipo_lettera_rds.NoKasko Then
                                     .importo = Format(mio_evento.importo, "0.00")
+                                    .importo = Format(mio_evento.totale / 1.22, "0.00")
                                 Else
-                                    .importo = Format(mio_evento.importo, "0.00") '& " + V.A.T."    'tolto perchè già presente nel testo del PDF - salvo 24.11.2022
+                                    .importo = Format(mio_evento.importo, "0.00") '& " + V.A.T."    'tolto perchè già presente nel testo del PDF - salvo 24.11.2022                                    
+                                    .importo = Format(mio_evento.totale / 1.22, "0.00")
                                 End If
                             End If
                             .iva = Libreria.getAliquotaIVADaId(Costanti.iva_default)

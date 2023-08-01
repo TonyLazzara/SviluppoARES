@@ -225,6 +225,8 @@ Partial Class gestione_danni_gestione_odl
 
             sqlODL.SelectCommand = lb_sqlODL.Text
 
+            'Libreria.genUserMsgBox(Page, sqlODL.SelectCommand)
+
             'Trace.Write(sqlODL.SelectCommand)
 
             listViewODL.DataBind()

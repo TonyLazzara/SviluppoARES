@@ -13,7 +13,7 @@
 <style type="text/css">
     .style18
     {
-        width: 310px;
+        width: 480px;
     }
     .style19
     {
@@ -232,9 +232,8 @@
                 &nbsp;&nbsp;<b>Incassato</b>
                 <asp:Label ID="lb_TotIncassato" runat="server" Text="0,00" ></asp:Label>
             </td>
-            <td align="center">
-                <asp:Button ID="bt_cerca_rds" runat="server" Text="Cerca" 
-                    style="height: 26px" />
+            <td align="right">
+                <asp:Button ID="bt_cerca_rds" runat="server" Text="Cerca" />
                 <asp:Button ID="bt_stampa" runat="server" Text="Stampa" />
             </td>
         </tr>
@@ -273,18 +272,21 @@
                           <asp:Label ID="lb_stato_rds" runat="server" Text='<%# Eval("stato_rds") %>' visible="false" />
                           <asp:Label ID="lb_des_stato_rds" runat="server" Text='<%# Eval("des_stato_rds") %>' />
                       </td>
-                      <td align="right">
-                          <asp:Label ID="lb_importo" runat="server" Text='<%# libreria.myFormatta(Eval("importo"), "0.00") %>' />
+                      <td align="right">                                                                
+                            <asp:Label ID="lb_importo" runat="server" Text='<%# libreria.myFormatta(Eval("totale"), "0.00") %>' />                            
                       </td>
                       <td>
-                          <asp:Label ID="lb_scadenza_preaut" runat="server" Text='<%# libreria.myFormatta(Eval("scadenza_preaut"), "dd/MM/yyyy") %>' />
+                          <asp:Label ID="lb_scadenza_preaut" runat="server" Text='<%# libreria.myFormatta(Eval("scadenza_preaut"), "dd/MM/yyyy") %>' visible="false" />
+                          <asp:Label ID="lb_importoIncasso" runat="server" Text='<%# libreria.myFormatta(Eval("incasso"), "0.00") %>' />                                                    
                       </td>
                       <td align="center" width="40px" runat="server" visible='<%# lb_AbilitaLente.Text %>'>
                           <asp:ImageButton ID="lente" runat="server" ImageUrl="/images/lente.png" style="width: 16px" CommandName="lente"/>
                       </td>
+                      <!-- Tony 20/04/2023 -->
                       <td align="center" width="40px" runat="server" visible='<%# lb_AbilitaPagamento.Text %>'>
-                          <asp:ImageButton ID="pagamento" runat="server" ImageUrl="/images/euro.png" style="width: 16px" CommandName="pagamento"/>
+                          <asp:ImageButton ID="pagamento" runat="server" ImageUrl="/images/euro.png" style="width: 16px" CommandName="pagamento" />
                       </td>
+                      <!-- FINE Tony -->
                   </tr>  
               </ItemTemplate>
               <AlternatingItemTemplate>
@@ -314,11 +316,12 @@
                           <asp:Label ID="lb_stato_rds" runat="server" Text='<%# Eval("stato_rds") %>' visible="false" />
                           <asp:Label ID="lb_des_stato_rds" runat="server" Text='<%# Eval("des_stato_rds") %>' />
                       </td>
-                      <td align="right">
-                          <asp:Label ID="lb_importo" runat="server" Text='<%# libreria.myFormatta(Eval("importo"), "0.00") %>' />
+                      <td align="right">                                                                
+                            <asp:Label ID="lb_importo" runat="server" Text='<%# libreria.myFormatta(Eval("totale"), "0.00") %>' />                            
                       </td>
                       <td>
-                          <asp:Label ID="lb_scadenza_preaut" runat="server" Text='<%# libreria.myFormatta(Eval("scadenza_preaut"), "dd/MM/yyyy") %>' />
+                          <asp:Label ID="lb_scadenza_preaut" runat="server" Text='<%# libreria.myFormatta(Eval("scadenza_preaut"), "dd/MM/yyyy") %>' visible="false" />
+                          <asp:Label ID="lb_importoIncasso" runat="server" Text='<%# libreria.myFormatta(Eval("incasso"), "0.00") %>' />                                                    
                       </td>
                       <td align="center" width="40px" runat="server" visible='<%# lb_AbilitaLente.Text %>'>
                           <asp:ImageButton ID="lente" runat="server" ImageUrl="/images/lente.png" style="width: 16px" CommandName="lente"/>
@@ -351,8 +354,15 @@
                                       <th>Data</th>
                                       <th>Evento</th>
                                       <th>Stato</th>
-                                      <th>Stimato</th>
-                                      <th>Sc.Preaut.</th>
+                                      <th>                                       
+                                        <%--<% If DropDownList_stato_rds.SelectedValue = 6 Then%>
+                                            <asp:Label ID="lblColonnaStimatoIncassato" runat="server" Text="Incassato"></asp:Label>
+                                        <% Else%>                                        
+                                            <asp:Label ID="Label19" runat="server" Text="Stimato"></asp:Label>
+                                        <% End If%>--%>
+                                        Stimato
+                                      </th>
+                                      <th>Incassato</th>
                                       <th id="th_lente"></th>
                                       <th id="th_pagamento"></th>
                                   </tr>
@@ -604,7 +614,7 @@
 
 <asp:SqlDataSource ID="sqlStatoRDS" runat="server" 
         ConnectionString="<%$ ConnectionStrings:SicilyConnectionString %>" 
-        SelectCommand="SELECT id, descrizione FROM veicoli_stato_rds WITH(NOLOCK) WHERE id > 0 ORDER BY id">
+        SelectCommand="SELECT id, descrizione FROM veicoli_stato_rds WITH(NOLOCK) WHERE attivo =1 ORDER BY descrizione">
 </asp:SqlDataSource>
 
 <asp:SqlDataSource ID="sqlProprietari" runat="server" 
@@ -624,6 +634,6 @@
 
 <asp:SqlDataSource ID="sqlOrigine" runat="server" 
         ConnectionString="<%$ ConnectionStrings:SicilyConnectionString %>" 
-        SelectCommand="SELECT id, descrizione + ' (' + codice_sintetico + ')' descrizione FROM veicoli_tipo_documento_apertura_danno WITH(NOLOCK) ORDER BY id">
+        SelectCommand="SELECT id, descrizione + ' (' + codice_sintetico + ')' descrizione FROM veicoli_tipo_documento_apertura_danno WITH(NOLOCK) where id > 0 and id <> 6 and id <> 100 and id <> 103 and id <> 107 and id <> 113 ORDER BY id">
 </asp:SqlDataSource>
 

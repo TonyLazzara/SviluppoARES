@@ -94,66 +94,49 @@
   <tr id="Tr1" runat="server">
     <td valign="top" runat="server">
         
-        <%--<asp:Image ID="img_fronte" runat="server"  ImageUrl="~/MappaturaDanni/Immagini/"   />--%>
-        <asp:ImageButton ID="img_fronte" runat="server" ImageUrl="~/MappaturaDanni/Immagini/" />
+        <asp:Image ID="img_fronte" runat="server"  ImageUrl="~/images/SchemaAuto.gif"   />
 
     </td>
-   
-   </tr>
-   <tr>
+    <td id="Td2" style="width:1px" runat="server">&nbsp;</td>
     <td id="Td3" align="left" valign="top" runat="server">
         <table width="100%" cellpadding="0" cellspacing="0" runat="server" id="table4">
-            <tr id="Tr2" runat="server" visibile="false">
-                <td id="Td4" runat="server">
-                    <asp:Label ID="Label4" runat="server" Text="Posizione:" CssClass="testo_bold"></asp:Label>
-                </td>
-                <td id="Td5" runat="server">
-                    <asp:DropDownList ID="DropDownPosizione_F" runat="server" AppendDataBoundItems="True"  Enabled="false"
-                            DataSourceID="sqlPosizioneDanno" DataTextField="descrizione" DataValueField="id">
-                            <asp:ListItem Value="0" Selected="True" >Seleziona.-..</asp:ListItem>
-                    </asp:DropDownList>
-                    <asp:Label ID="lbl_posizione" runat="server" Text="" Width="20" ForeColor="White" BorderColor="White"></asp:Label>   
-                <input id="lblpos" name="lblpos" style="width:20px;color:white;border:none;" />
-                </td>
-            </tr>
-            <tr id="Tr3" runat="server" visible="false">
-                <td id="Td6" runat="server">
-                    <asp:Label ID="Label6" runat="server" Text="Tipologia:" CssClass="testo_bold"></asp:Label>                       
-                </td>
-                <td id="Td7" runat="server">            
-                    <asp:DropDownList ID="DropDownTipoDanno_F" runat="server" AppendDataBoundItems="True" 
-                            DataSourceID="sqlTipoDanno" DataTextField="descrizione" DataValueField="id">
-                            <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
-                    </asp:DropDownList>
-                </td>
-            </tr>
-            <tr id="Tr4" runat="server">
-                <td id="Td8" runat="server">
-                    <asp:Label ID="Label9" runat="server" Text="Entità:" CssClass="testo_bold"></asp:Label>
-                </td>
-                <td id="Td9" runat="server">
-                    <asp:DropDownList ID="DropDownEntita_F" runat="server" AppendDataBoundItems="True" Visible="False">
-                            <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
-                            <asp:ListItem Value="1">lieve</asp:ListItem>
-                            <asp:ListItem Value="2">medio</asp:ListItem>
-                            <asp:ListItem Value="3">grave</asp:ListItem>
-                    </asp:DropDownList>
-
-                    <asp:DropDownList ID="dropEntitaDanno" runat="server" class="form-control"
-                            AppendDataBoundItems="True" DataSourceID="SqlEntitaDanno" DataTextField="descrizione" 
-                            DataValueField="id" Visible="False">
-                        <asp:ListItem Selected="True" Value="0">Seleziona...</asp:ListItem>
-                    </asp:DropDownList>
-                </td>
-            </tr>
-            <tr id="TrFoto" runat="server" visible="false">
-                <td id="Td10" runat="server">
-                    <asp:Label ID="Label1" runat="server" Text="Foto:" CssClass="testo_bold"></asp:Label>                       
-                </td>
-                <td id="Td19" runat="server">            
-                    <asp:FileUpload ID="FileUploadFoto" runat="server" class="btn btn-primary"/>  
-                </td>
-            </tr>
+    <tr id="Tr2" runat="server">
+        <td id="Td4" runat="server">
+            <asp:Label ID="Label4" runat="server" Text="Posizione:" CssClass="testo_bold"></asp:Label>
+        </td>
+        <td id="Td5" runat="server">
+            <asp:DropDownList ID="DropDownPosizione_F" runat="server" AppendDataBoundItems="True"  Enabled="false"
+                    DataSourceID="sqlPosizioneDanno" DataTextField="descrizione" DataValueField="id">
+                    <asp:ListItem Value="0" Selected="True" >Seleziona.-..</asp:ListItem>
+            </asp:DropDownList>
+            <asp:Label ID="lbl_posizione" runat="server" Text="" Width="20" ForeColor="White" BorderColor="White"></asp:Label>   
+          <input id="lblpos" name="lblpos" style="width:20px;color:white;border:none;" />
+        </td>
+    </tr>
+    <tr id="Tr3" runat="server">
+      <td id="Td6" runat="server">
+        <asp:Label ID="Label6" runat="server" Text="Tipologia:" CssClass="testo_bold"></asp:Label>                       
+      </td>
+      <td id="Td7" runat="server">            
+        <asp:DropDownList ID="DropDownTipoDanno_F" runat="server" AppendDataBoundItems="True" 
+                DataSourceID="sqlTipoDanno" DataTextField="descrizione" DataValueField="id">
+                <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
+        </asp:DropDownList>
+       </td>
+    </tr>
+    <tr id="Tr4" runat="server">
+      <td id="Td8" runat="server">
+        <asp:Label ID="Label9" runat="server" Text="Entità:" CssClass="testo_bold"></asp:Label>
+      </td>
+      <td id="Td9" runat="server">
+          <asp:DropDownList ID="DropDownEntita_F" runat="server" AppendDataBoundItems="True">
+                <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
+                <asp:ListItem Value="1">lieve</asp:ListItem>
+                <asp:ListItem Value="2">medio</asp:ListItem>
+                <asp:ListItem Value="3">grave</asp:ListItem>
+          </asp:DropDownList>
+      </td>
+    </tr>
     <tr runat="server">
       <td  valign="top" runat="server" >
           <asp:Label ID="Label10" runat="server" Text="Nota:" CssClass="testo_bold"></asp:Label>
@@ -363,7 +346,287 @@
             </ContentTemplate>
         </ajaxtoolkit:TabPanel>
 
+<%--<ajaxtoolkit:TabPanel ID="tab_retro" runat="server" HeaderText="Vista Retro">
+            <HeaderTemplate>Vista Retro</HeaderTemplate>
+   <ContentTemplate>
 
+<script type="text/javascript" language="javascript">
+
+    function point_it_R(Valore) {
+        if(<%= lb_disabilita_mappa.text %>) {
+            return false;
+        }
+        var DropDownPosizione = document.getElementById('<%= DropDownPosizione_R.UniqueID.replace("$","_") %>');
+        if (DropDownPosizione == null) {
+            return false;
+        }
+
+        for (i = 0; i < DropDownPosizione.options.length; i++) {
+            if (DropDownPosizione.options[i].value == Valore) {
+                DropDownPosizione.options[i].selected = true;
+                return false;
+            }
+        }
+        return false;
+    }
+
+ </script>
+
+<div id="div_img_retro" runat="server" style="position:relative;" >
+
+
+<table width="100%" cellpadding="0" cellspacing="0" runat="server" id="table6">
+  <tr id="Tr14" runat="server">
+    <td valign="top" runat="server">
+        
+        <asp:Image ID="img_retro" runat="server"  ImageUrl="~/images/SchemaAuto.gif" style="position:relative;" />
+        
+    </td>
+    <td id="Td23" style="width:1px" runat="server">&nbsp;</td>
+    <td id="Td24" align="left" valign="top" runat="server">
+    <table width="100%" cellpadding="0" cellspacing="0" runat="server" id="table3">
+    <tr id="Tr15" runat="server">
+        <td id="Td25" runat="server">
+            <asp:Label ID="Label1" runat="server" Text="Posizione:" CssClass="testo_bold"></asp:Label>
+        </td>
+        <td id="Td26" runat="server">
+            <asp:DropDownList ID="DropDownPosizione_R" runat="server" AppendDataBoundItems="True" 
+                    DataSourceID="sqlPosizioneDanno" DataTextField="descrizione" DataValueField="id">
+                    <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
+            </asp:DropDownList>
+        </td>
+    </tr>
+    <tr id="Tr16" runat="server">
+      <td id="Td27" runat="server">
+        <asp:Label ID="Label8" runat="server" Text="Danno:" CssClass="testo_bold"></asp:Label>                       
+      </td>
+      <td id="Td28" runat="server">            
+        <asp:DropDownList ID="DropDownTipoDanno_R" runat="server" AppendDataBoundItems="True" 
+                DataSourceID="sqlTipoDanno" DataTextField="descrizione" DataValueField="id">
+                <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
+        </asp:DropDownList>
+       </td>
+    </tr>
+    <tr id="Tr17" runat="server">
+      <td id="Td29" runat="server">
+        <asp:Label ID="Label2" runat="server" Text="Entità:" CssClass="testo_bold"></asp:Label>
+      </td>
+      <td id="Td30" runat="server">
+          <asp:DropDownList ID="DropDownEntita_R" runat="server" AppendDataBoundItems="True">
+                <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
+                <asp:ListItem Value="1">Lieve</asp:ListItem>
+                <asp:ListItem Value="2">Medio</asp:ListItem>
+                <asp:ListItem Value="3">Grave</asp:ListItem>
+          </asp:DropDownList>
+      </td>
+    </tr>
+    <tr runat="server">
+      <td valign="top" runat="server" >
+          <asp:Label ID="Label3" runat="server" Text="Nota:" CssClass="testo_bold"></asp:Label>
+      </td>
+      <td id="Td32" runat="server" >
+          <asp:TextBox ID="tx_descrizione_R" runat="server" Width="300px" Height="65px" 
+            TextMode="MultiLine"></asp:TextBox>
+        </td>
+    </tr>
+    <tr id="Tr19" runat="server">
+      <td colspan="2" runat="server">&nbsp;
+      </td>
+    </tr>
+    <tr runat="server">
+      <td align="center" colspan="2" runat="server">
+            <asp:Button ID="btnSalvaNuovo_R" runat="server" Text="Salva Nuovo Danno" ValidationGroup="Salva_R" />
+            <asp:Button ID="btnChiudiNuovo_R" runat="server" Text="Chiudi" 
+                visible="False" />
+      </td>
+    </tr>
+    <tr runat="server">
+      <td colspan="2" runat="server">
+<div runat="server" id="div_elenco_documenti_R">
+<table width="100%" cellpadding="0" cellspacing="0" runat="server" id="table5">
+    <tr runat="server">
+        <td id="Td19" align="center" colspan="2" runat="server" visible="False" >
+            <asp:Button ID="btnModifica_R" runat="server" Text="Modifica" ValidationGroup="Salva_R" />
+            <asp:Button ID="btnChiudiModifica_R" runat="server" Text="Chiudi" />
+        </td>
+    </tr>
+    <tr runat="server">
+        <td colspan="2" runat="server">&nbsp;
+        </td>
+    </tr>
+    <tr runat="server">
+      <td colspan="2" runat="server">
+         <asp:ListView ID="listViewDocumenti_R" runat="server" 
+              DataSourceID="sqlDocumenti" DataKeyNames="id" EnableModelValidation="True">
+              <ItemTemplate>
+                  <tr style="background-color:#DCDCDC; color: #000000;">
+                      <td>
+                          <asp:Label ID="lb_des_tipo_documento" runat="server" Text='<%# Eval("des_tipo_documento") %>' />
+                          <asp:Label ID="lb_tipo_documento" runat="server" Text='<%# Eval("tipo_documento") %>' Visible="false" />
+                      </td> 
+                      <td>
+                          <asp:Label ID="lb_id" runat="server" Text='<%# Eval("id") %>' Visible="false" />
+                          <asp:Label ID="lb_descrizione" runat="server" Text='<%# Eval("descrizione") %>' />
+                          <asp:Label ID="lb_riferimento_foto" runat="server" Text='<%# Eval("riferimento_foto") %>' Visible="false" />
+                      </td>
+                      <td id="Td2" align="center" width="40px" runat="server" >
+                        <a href="/images/FotoDanni/<%# Eval("riferimento_foto") %>" target="_blank"><img src="/images/lente.png" style="width: 16px" /></a>
+                      </td>
+                      <td id="Td3" align="center" width="40px" runat="server" >
+                        <asp:ImageButton ID="elimina" runat="server" ImageUrl="/images/elimina.png" style="width: 16px" CommandName="elimina" OnClientClick="javascript: return(window.confirm('Confermi la cancellazione del documento?'));" ToolTip="Elimina Documento" />
+                      </td>
+                  </tr>
+              </ItemTemplate>
+              <AlternatingItemTemplate>
+                  <tr style="">
+                      <td>
+                          <asp:Label ID="lb_des_tipo_documento" runat="server" Text='<%# Eval("des_tipo_documento") %>' />
+                          <asp:Label ID="lb_tipo_documento" runat="server" Text='<%# Eval("tipo_documento") %>' Visible="false" />
+                      </td>
+                      <td>
+                          <asp:Label ID="lb_id" runat="server" Text='<%# Eval("id") %>' Visible="false" />
+                          <asp:Label ID="lb_descrizione" runat="server" Text='<%# Eval("descrizione") %>' />
+                          <asp:Label ID="lb_riferimento_foto" runat="server" Text='<%# Eval("riferimento_foto") %>' Visible="false" />
+                      </td>
+                      <td id="Td2" align="center" width="40px" runat="server" >
+                        <a href="/images/FotoDanni/<%# Eval("riferimento_foto") %>" target="_blank"><img src="/images/lente.png" style="width: 16px" /></a>
+                      </td>
+                      <td id="Td3" align="center" width="40px" runat="server" >
+                        <asp:ImageButton ID="elimina" runat="server" ImageUrl="/images/elimina.png" style="width: 16px" CommandName="elimina" OnClientClick="javascript: return(window.confirm('Confermi la cancellazione del documento?'));" ToolTip="Elimina Documento" />
+                      </td>
+                  </tr>
+              </AlternatingItemTemplate>
+              <EmptyDataTemplate>
+                  <table id="Table1" runat="server" style="">
+                      <tr style="">
+                          <td>
+                              Nessun Documento Allegato.
+                          </td>
+                      </tr>
+                  </table>
+              </EmptyDataTemplate>
+              <LayoutTemplate>
+                  <table id="Table1" runat="server" width="100%">
+                      <tr id="Tr1" runat="server">
+                          <td id="Td1" runat="server">
+                              <table ID="itemPlaceholderContainer" runat="server" border="1" 
+                                       style="background-color: #FFFFFF;border-collapse: collapse;border-color: #999999;border-style:none;border-width:0px;font-family: Verdana, Arial, Helvetica, sans-serif;" width="100%">
+                                <tr id="Tr3" runat="server" style="color: #FFFFFF" class="sfondo_rosso">
+                                      <th id="Th5" runat="server">
+                                          Documento</th>
+                                      <th id="Th2" runat="server">
+                                          Nome</th>
+                                      <th id="Th_lente" runat="server">
+                                          </th>
+                                      <th id="Th_elimina" runat="server">
+                                          </th>
+                                  </tr>
+                                  <tr ID="itemPlaceholder" runat="server">
+                                  </tr>
+                              </table>
+                          </td>
+                      </tr>
+                  </table>
+              </LayoutTemplate>
+          </asp:ListView>
+        </td>
+    </tr>
+    <tr runat="server">
+        <td runat="server">
+            <asp:Label ID="Label5" runat="server" Text="Allega Documento:" CssClass="testo_bold"></asp:Label>
+        </td>
+        <td runat="server" >
+            <asp:FileUpload ID="FileUpload1_R" size="32" runat="server" />
+        </td>
+    </tr>
+    <tr runat="server">
+        <td runat="server">
+            <asp:Label ID="Label7" runat="server" Text="Tipo Documento:" CssClass="testo_bold"></asp:Label>
+        </td>
+        <td runat="server" >
+            <asp:DropDownList ID="DropDownTipoDocumentoImg_R" runat="server" AppendDataBoundItems="True" 
+                      DataSourceID="sqlTipoDocumentoImg" DataTextField="descrizione" DataValueField="id">
+                <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
+            </asp:DropDownList>
+            &nbsp;&nbsp;<asp:Button ID="btnInviaFile_R" runat="server" Text="Salvataggio" ValidationGroup="Upload_R" />
+        </td>
+    </tr>
+   </table> 
+</div>
+<div id="div_da_addebitare_R" runat="server" visible="False">
+    <br /><br />
+    <table width="100%" cellpadding="0" cellspacing="0">
+         <tr>
+            <td runat="server" >
+                    <asp:Label ID="Label23" runat="server" Text="Motivo Non Addebito:" CssClass="testo_bold"></asp:Label>
+            </td>
+            <td runat="server" >
+                <asp:DropDownList ID="DropDownNonAddebito_R" runat="server" AppendDataBoundItems="True" 
+                    DataSourceID="Sql_non_addebito" DataTextField="descrizione" DataValueField="id" >
+                    <asp:ListItem Value="0" Selected="True">Seleziona...</asp:ListItem>
+                </asp:DropDownList>
+            </td>
+        </tr>
+        <tr runat="server">
+            <td id="Td10" align="center" runat="server" colspan="2" >
+                <asp:Button ID="bt_da_addebitare_R" runat="server" Text="Da Addebitare" />
+                <asp:Button ID="bt_da_non_addebitare_R" runat="server" Text="Da Non Addebitare" ValidationGroup="Non_Addebito_R" />
+            </td>
+        </tr>
+    </table>
+</div>
+      </td> 
+    </tr>
+  </table>        
+    </td>
+  </tr>
+</table>
+
+<asp:ValidationSummary ID="ValidationSummary1" runat="server" 
+    DisplayMode="List" ShowMessageBox="True" ShowSummary="False" 
+    ValidationGroup="Salva_R" />
+
+<asp:CompareValidator ID="CompareValidator1" runat="server" 
+    ControlToValidate="DropDownPosizione_R" ErrorMessage="Specificare la posizione del danno."
+    Type="Integer" Operator="GreaterThan" ValueToCompare="0"
+    Font-Size="0pt" ValidationGroup="Salva_R" ></asp:CompareValidator>
+
+<asp:CompareValidator ID="CompareValidator5" runat="server" 
+    ControlToValidate="DropDownTipoDanno_R" ErrorMessage="Specificare il danno."
+    Type="Integer" Operator="GreaterThan" ValueToCompare="0"
+    Font-Size="0pt" ValidationGroup="Salva_R" ></asp:CompareValidator>
+
+<asp:CompareValidator ID="CompareValidator2" runat="server" 
+    ControlToValidate="DropDownEntita_R" ErrorMessage="Specificare l'entità del danno."
+    Type="Integer" Operator="GreaterThan" ValueToCompare="0"
+    Font-Size="0pt" ValidationGroup="Salva_R" ></asp:CompareValidator>
+
+<asp:ValidationSummary ID="ValidationSummary3" runat="server" 
+    DisplayMode="List" ShowMessageBox="True" ShowSummary="False" 
+    ValidationGroup="Upload_R" />
+
+<asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" 
+    ControlToValidate="FileUpload1_R" ErrorMessage="Nessuna immagine selezionata." 
+    Font-Size="0pt" SetFocusOnError="True" ValidationGroup="Upload_R"></asp:RequiredFieldValidator> 
+
+<asp:CompareValidator ID="CompareValidator4" runat="server" 
+    ControlToValidate="DropDownTipoDocumentoImg_R" ErrorMessage="Specificare il tipo del documento."
+    Type="Integer" Operator="GreaterThan" ValueToCompare="0"
+    Font-Size="0pt" ValidationGroup="Upload_R" ></asp:CompareValidator>
+
+<asp:ValidationSummary ID="ValidationSummary8" runat="server" 
+    DisplayMode="List" ShowMessageBox="True" ShowSummary="False" 
+    ValidationGroup="Non_Addebito_R" />
+
+<asp:CompareValidator ID="CompareValidator12" runat="server" 
+    ControlToValidate="DropDownNonAddebito_R" ErrorMessage="Specificare il motivo di non addebito del danno."
+    Type="Integer" Operator="GreaterThan" ValueToCompare="0"
+    Font-Size="0pt" ValidationGroup="Non_Addebito_R" ></asp:CompareValidator>
+
+</div>
+
+            </ContentTemplate>
+</ajaxtoolkit:TabPanel>--%>
 
 
 <ajaxtoolkit:TabPanel ID="tab_accessori" runat="server" HeaderText="Accessori/Dotazioni">
@@ -931,9 +1194,6 @@
       
  </ajaxtoolkit:TabContainer>  
 
-    <asp:Label ID="lblDanniNewInEdit" runat="server" Text=""></asp:Label>
-    <asp:TextBox ID="txtCoordinate" runat="server"></asp:TextBox>
-
  </div>
 
 <asp:Label ID="lb_id_evento" runat="server" Text='0' Visible="true" />
@@ -948,7 +1208,7 @@
 <asp:Label ID="lb_id_gruppo_evento" runat="server" Text='0' Visible="false" />
 
 <asp:Label ID="lb_id_tipo_documento" runat="server" Text='0' Visible="false" />
-<asp:Label ID="lb_id_documento" runat="server" Text='0' Visible="true" />
+<asp:Label ID="lb_id_documento" runat="server" Text='0' Visible="false" />
 <asp:Label ID="lb_id_a_carico_del_cliente" runat="server" Text='2' Visible="false" />
 
 <asp:Label ID="lb_id_danno_meccanico" runat="server" Text='0' Visible="False" />
@@ -1063,9 +1323,4 @@
 <asp:SqlDataSource ID="Sql_non_addebito" runat="server" 
         ConnectionString="<%$ ConnectionStrings:SicilyConnectionString %>" 
         SelectCommand="SELECT * FROM [veicoli_motivo_non_addebito_rds] WITH(NOLOCK) ORDER BY descrizione">
-</asp:SqlDataSource>
-
-<asp:SqlDataSource ID="SqlEntitaDanno" runat="server" 
-    ConnectionString="<%$ ConnectionStrings:SicilyConnectionString %>" 
-    SelectCommand="SELECT id,descrizione FROM danni_new_entita_danni WITH(NOLOCK)  ORDER BY descrizione asc">
 </asp:SqlDataSource>

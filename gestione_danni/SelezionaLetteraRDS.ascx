@@ -145,6 +145,7 @@
         <tr>
             <td colspan="2" align="center">
                 <asp:Button ID="bt_stampa" runat="server" Text="Stampa"/>
+                <%--<asp:Button ID="btnInviaMail" runat="server" Text="Invia Mail"/>--%>
                 <asp:Button ID="bt_chiudi" runat="server" Text="Chiudi" OnClientClick='javascript:chiudi_form(); return false;' />
             </td>
         </tr>
@@ -152,3 +153,4 @@
 </div>
 
 <asp:Label ID="lb_id_evento" runat="server" Text='0' visible="false"></asp:Label>
+<asp:Label ID="id_evento_apertura" runat="server" Text='0' visible="false"></asp:Label>

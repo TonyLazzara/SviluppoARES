@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 Imports System.Collections.Generic
 
-Public Class filtro_rds
+Public Class filtro_rds    
     Public id_rds As String = ""
     Public contratto As String = ""
     Public id_proprietario As Integer = 0
@@ -450,7 +450,10 @@ Partial Class gestione_danni_gestione_danni
 
 
             lb_sqlEventiDannoTarga.Text = sqlstr
+
             sqlEventiDannoTarga.SelectCommand = lb_sqlEventiDannoTarga.Text
+
+            'Response.Write(lb_sqlEventiDannoTarga.Text)
 
             CalcolaTotali()
 
@@ -492,9 +495,41 @@ Partial Class gestione_danni_gestione_danni
                     Dbc.Open()
                     Using Rs = Cmd.ExecuteReader
                         If Rs.Read Then
+                            ''Tony 18-05-2023
+                            'Dim TotaleNumRecAux As String = ""
+                            'Dim TotaleAux As String = ""
+                            'Dim SpesePostaliAux As String = ""
+                            'Dim TotaleIncassatoAux As String = ""
+
+                            ''Response.Write("Tot Aux " & TotaleAux)
+                            ''FINE Tony
+
+                            'TotaleNumRecAux = IIf(Rs("NumRecord") Is DBNull.Value, 0, Rs("NumRecord"))
+                            'TotaleNumRecAux = TotaleAux
+                            'TotaleNumRecAux = FormatNumber(TotaleAux, 2, , , TriState.True)
+                            ''IIf(Rs("NumRecord") Is DBNull.Value, 0, Rs("NumRecord"))                            
+                            'lb_NumRecord.Text = TotaleNumRecAux
+
+                            'TotaleAux = IIf(Rs("TotStimato") Is DBNull.Value, "0,00", Libreria.myFormatta(Rs("TotStimato"), "0.00"))
+                            'TotaleAux = TotaleAux * 1.22
+                            'TotaleAux = FormatNumber(TotaleAux, 2, , , TriState.True)
+                            ''lb_TotStimato.Text = IIf(Rs("TotStimato") Is DBNull.Value, "0.00", Libreria.myFormatta(Rs("TotStimato"), "0.00"))
+                            'lb_TotStimato.Text = TotaleAux
+
+                            'TotaleIncassatoAux = IIf(Rs("TotIncassato") Is DBNull.Value, "0,00", Libreria.myFormatta(Rs("TotIncassato"), "0.00"))
+                            ''Response.Write("Inc " & TotaleIncassatoAux)
+                            'TotaleIncassatoAux = FormatNumber(TotaleIncassatoAux, 2, , , TriState.True)
+                            'lb_TotIncassato.Text = TotaleIncassatoAux
+
                             lb_NumRecord.Text = IIf(Rs("NumRecord") Is DBNull.Value, 0, Rs("NumRecord"))
+                            lb_NumRecord.Text = FormatNumber(lb_NumRecord.Text, 0, , , TriState.True)
+
                             lb_TotStimato.Text = IIf(Rs("TotStimato") Is DBNull.Value, "0.00", Libreria.myFormatta(Rs("TotStimato"), "0.00"))
+                            lb_TotStimato.Text = lb_TotStimato.Text
+                            lb_TotStimato.Text = FormatNumber(lb_TotStimato.Text, 2, , , TriState.True)
+
                             lb_TotIncassato.Text = IIf(Rs("TotIncassato") Is DBNull.Value, "0.00", Libreria.myFormatta(Rs("TotIncassato"), "0.00"))
+                            lb_TotIncassato.Text = FormatNumber(lb_TotIncassato.Text, 2, , , TriState.True)
                         End If
                     End Using
                 End Using
@@ -525,9 +560,16 @@ Partial Class gestione_danni_gestione_danni
                 sqlStr += " AND v.targa = '" & Libreria.formattaSql(targa) & "'"
             End If
 
-            If stato_rds > 0 Then
+            'Tony 17/04/2023
+            If stato_rds > 0 And stato_rds <> 4 Then
                 sqlStr += " AND ed.stato_rds = " & stato_rds
+            Else
+                If stato_rds <> 0 Then 'Statords sarà 4
+                    sqlStr += " AND ed.da_riparare = 1"                
+                End If
+
             End If
+            'FINE Tony
 
             If id_stazione > 0 Then
                 sqlStr += " AND v.id_stazione = " & id_stazione
@@ -606,9 +648,8 @@ Partial Class gestione_danni_gestione_danni
     End Function
 
     Protected Function getSqlEventiDannoTarga(ByVal id_rds As String, ByVal contratto As String, ByVal id_proprietario As Integer, ByVal targa As String, ByVal stato_rds As Integer, ByVal id_stazione As Integer, ByVal RdsDataDa As String, ByVal RdsDataA As String, ByVal PagDataDa As String, ByVal PagDataA As String, ByVal PeriziaDataDa As String, ByVal PeriziaDataA As String, ByVal id_origine As Integer, ByVal PreaudDataDa As String, ByVal PreautDataA As String) As String
-
         Dim sqlStr As String = "SELECT tdd.codice_sintetico des_id_tipo_documento_apertura, v.targa, s.nome_stazione, sr.descrizione des_stato_rds, p.descrizione proprietario,"
-        sqlStr += " ed.id id_evento, ed.id_veicolo, ed.id_tipo_documento_apertura, ed.id_documento_apertura, ed.num_crv, ed.data_rds, ed.id_rds, ed.stato_rds, ed.importo, ed.incasso, MAX(px.scadenza_preaut) scadenza_preaut"
+        sqlStr += " ed.id id_evento, ed.id_veicolo, ed.id_tipo_documento_apertura, ed.id_documento_apertura, ed.num_crv, ed.data_rds, ed.id_rds, ed.stato_rds, ed.importo, ed.incasso, ed.totale, MAX(px.scadenza_preaut) scadenza_preaut"
         sqlStr += " FROM veicoli_evento_apertura_danno ed WITH(NOLOCK)"
         sqlStr += " LEFT JOIN veicoli v WITH(NOLOCK) ON ed.id_veicolo = v.id"
         sqlStr += " LEFT JOIN stazioni s WITH(NOLOCK) ON v.id_stazione = s.id"
@@ -633,26 +674,46 @@ Partial Class gestione_danni_gestione_danni
         sqlStr += getClausolaWhereSqlEventiDanno(id_rds, contratto, id_proprietario, targa, stato_rds, id_stazione, RdsDataDa, RdsDataA, PagDataDa, PagDataA, PeriziaDataDa, PeriziaDataA, id_origine, PreaudDataDa, PreautDataA)
 
         sqlStr += " GROUP BY tdd.codice_sintetico, v.targa, s.nome_stazione, sr.descrizione, p.descrizione," &
-            " ed.id, ed.id_veicolo, ed.id_tipo_documento_apertura, ed.id_documento_apertura, ed.num_crv, ed.data_rds, ed.id_rds, ed.stato_rds, ed.importo, ed.incasso"
+            " ed.id, ed.id_veicolo, ed.id_tipo_documento_apertura, ed.id_documento_apertura, ed.num_crv, ed.data_rds, ed.id_rds, ed.stato_rds, ed.importo, ed.incasso, ed.totale"
 
         sqlStr += " ORDER BY ed.data_rds DESC, ed.id_documento_apertura DESC, ed.id_rds DESC"
 
         'Trace.Write("******************************")
         'Trace.Write(sqlStr)
-        'Response.Write("err CalcolaTotaliSQL :<br/>" & sqlStr & "<br/>")
+
+
+        'Tony 17/04/2023
+        If DropDownList_stato_rds.SelectedValue = 4 Then 'SElezionato Da riparare
+            'Response.Write("Da Riparare :<br/>" & sqlStr & "<br/>")
+        Else
+            'Response.Write("ALTRO :<br/>" & sqlStr & "<br/>")
+        End If
+        'FINE Tony
         'Response.End()
 
+
+        'Response.Write(sqlStr)
         Return sqlStr
     End Function
 
     Protected Function getSqlNumeroRecord(ByVal id_rds As String, ByVal contratto As String, ByVal id_proprietario As Integer, ByVal targa As String, ByVal stato_rds As Integer, ByVal id_stazione As Integer, ByVal RdsDataDa As String, ByVal RdsDataA As String, ByVal PagDataDa As String, ByVal PagDataA As String, ByVal PeriziaDataDa As String, ByVal PeriziaDataA As String, ByVal id_origine As Integer) As String
-        Dim sqlStr As String = "SELECT COUNT(*) NumRecord, SUM(ed.importo) TotStimato, SUM(ed.incasso) TotIncassato"
+        'Tony 20-05-2023
+        'Dim sqlStr As String = "SELECT COUNT(*) NumRecord, SUM(ed.importo) TotStimato, SUM(ed.incasso) TotIncassato"
+        'sqlStr += " FROM veicoli_evento_apertura_danno ed WITH(NOLOCK)"
+        'sqlStr += " INNER JOIN veicoli v WITH(NOLOCK) ON ed.id_veicolo = v.id"
+        'sqlStr += " INNER JOIN stazioni s WITH(NOLOCK) ON v.id_stazione = s.id"
+        'sqlStr += " INNER JOIN proprietari_veicoli p WITH(NOLOCK) ON v.id_proprietario = p.id"
+        'sqlStr += " WHERE ed.attivo = 1"
+        'sqlStr += " AND ed.sospeso_rds = 0"
+
+        Dim sqlStr As String = "SELECT COUNT(*) NumRecord, SUM(ed.totale) TotStimato, SUM(ed.incasso) TotIncassato"
         sqlStr += " FROM veicoli_evento_apertura_danno ed WITH(NOLOCK)"
         sqlStr += " INNER JOIN veicoli v WITH(NOLOCK) ON ed.id_veicolo = v.id"
         sqlStr += " INNER JOIN stazioni s WITH(NOLOCK) ON v.id_stazione = s.id"
         sqlStr += " INNER JOIN proprietari_veicoli p WITH(NOLOCK) ON v.id_proprietario = p.id"
         sqlStr += " WHERE ed.attivo = 1"
         sqlStr += " AND ed.sospeso_rds = 0"
+        'FINE Tony
 
         sqlStr += getClausolaWhereSqlEventiDanno(id_rds, contratto, id_proprietario, targa, stato_rds, id_stazione, RdsDataDa, RdsDataA, PagDataDa, PagDataA, PeriziaDataDa, PeriziaDataA, id_origine)
 
@@ -675,17 +736,40 @@ Partial Class gestione_danni_gestione_danni
         Dim lb_stato_rds As Label = e.Item.FindControl("lb_stato_rds")
         Dim pagamento As ImageButton = e.Item.FindControl("pagamento")
         Dim lb_id_tipo_documento_apertura As Label = e.Item.FindControl("lb_id_tipo_documento_apertura")
+        Dim TestoColonnaStimatoIncassato As ImageButton = e.Item.FindControl("lblColonnaStimatoIncassato")
+
+        'Tony 11-05-2023
+        'Dim lblImporto As Label = e.Item.FindControl("lb_importo")
+        'Dim lblImportoIncasso As Label = e.Item.FindControl("lb_importoIncasso")
+        'FINE Tony
+
 
         If Integer.Parse(lb_id_tipo_documento_apertura.Text) = tipo_documento.Contratto Then
             Dim stato_rds_riga As sessione_danni.stato_rds = Integer.Parse(lb_stato_rds.Text)
             If stato_rds_riga = sessione_danni.stato_rds.Da_addebitare Or stato_rds_riga = sessione_danni.stato_rds.Da_fatturare Or stato_rds_riga = sessione_danni.stato_rds.Fatturato Then
-                pagamento.Visible = True
+                'Tony 20-04-2023
+                'pagamento.Visible = True
+                pagamento.Visible = False
+                'FINE Tony
             Else
                 pagamento.Visible = False
             End If
+
+            'If DropDownList_stato_rds.SelectedValue = 6 Then
+            '    lblImporto.Visible = False
+            'Else
+            '    lblImportoIncasso.Visible = False
+            'End If
+            'If stato_rds_riga = sessione_danni.stato_rds.Da_fatturare Then
+            '    lblImporto.Visible = False
+            'Else
+            '    lblImportoIncasso.Visible = False
+            'End If
         Else
             pagamento.Visible = False
         End If
+
+        
 
     End Sub
 
@@ -740,6 +824,10 @@ Partial Class gestione_danni_gestione_danni
         End Select
 
         InitIntestazione(mio_record)
+
+        'Tony 04-05-2023
+        'Response.Write(tipo_documento & " " & numero_documento & " " & numero_crv)
+
         gestione_checkin.InitFormRDS(tipo_documento, numero_documento, numero_crv)
         
         tabConducente.Visible = True
@@ -778,11 +866,10 @@ Partial Class gestione_danni_gestione_danni
 
         gestione_checkin_storico.InitFormCheckOutRDS(tipo_documento, numero_documento, numero_crv)
 
-        Visibilita(DivVisibile.FormRDS)        
+        Visibilita(DivVisibile.FormRDS)
 
 
-
-
+        
     End Sub
 
     Protected Sub listViewEventiDanni_ItemCommand(sender As Object, e As System.Web.UI.WebControls.ListViewCommandEventArgs) Handles listViewEventiDanni.ItemCommand

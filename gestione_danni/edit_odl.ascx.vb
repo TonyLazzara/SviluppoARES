@@ -971,6 +971,20 @@ Partial Class gestione_danni_edit_odl
         Visibilita(DivVisibile.Edit)
 
         div_edit_danno.Visible = False
+
+        'Tony 16-05-2023
+        For i As Integer = 0 To listViewElencoDanniAperti.Items.Count - 1
+            Dim chkSelezionato As CheckBox = listViewElencoDanniAperti.Items(i).FindControl("ck_chiusura_danno")
+            Dim IdRDS As Label = listViewElencoDanniAperti.Items(i).FindControl("lb_id_rds")
+            Dim IdEvento As Label = listViewElencoDanniAperti.Items(i).FindControl("lb_id_evento")
+
+            'If chkSelezionato.Checked Then
+            '    Response.Write(IdRDS.Text & " - " & IdEvento.Text & " Selezionato<br>")
+            'Else
+            '    Response.Write(IdRDS.Text & " - " & IdEvento.Text & " NON Selezionato<br>")
+            'End If
+        Next
+        'FINE Tony
     End Sub
 
     Protected Sub InitIntestazione(ByVal mio_veicolo As tabella_veicoli)
@@ -1324,8 +1338,6 @@ Partial Class gestione_danni_edit_odl
             DropDown_ritirato_da.DataBind()
             DropDown_autorizzato_pagamento.DataBind()
         End If
-
-
 
     End Sub
 
@@ -2017,11 +2029,168 @@ Partial Class gestione_danni_edit_odl
         End If
     End Function
 
+    'Tony 21-04-2023
+    Private Sub InsArrayValore(ByVal NomeArray As Array, ByVal valore As String)
+        For i = 0 To UBound(NomeArray)
+            If NomeArray(i) = "" Then
+                NomeArray(i) = valore
+                Exit For
+            End If
+        Next
+    End Sub
+
+    Private Sub SvuotaArray(ByVal MiaArray)
+        Dim i
+        ' Verifico che MiaArray sia effettivamente un vettore.
+        ' Contestualmente mi assicuro che CosaCercare non sia vuoto
+        If IsArray(MiaArray) Then
+            ' Faccio un ciclo per la lunghezza della nostra array
+            For i = 0 To UBound(MiaArray)
+                ' Svuoto Array
+                MiaArray(i) = ""
+            Next
+        End If
+    End Sub
+    'FINE Tony
+
     Protected Sub bt_salva_form_odl_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles bt_salva_form_odl.Click
         If funzioni_comuni.getLivelloAccesso(Request.Cookies("SicilyRentCar")("idUtente"), PermessiUtente.GestioneODL) < "3" Then
             Libreria.genUserMsgBox(Page, "Non hai i permessi per salvare l'ODL.")
             Return
         End If
+
+        'Tony 21-04-2023
+        Dim ArrayElencoChkRDS(100) As String
+        SvuotaArray(ArrayElencoChkRDS)
+
+        For Each lvi As ListViewDataItem In listViewElencoDanniAperti.Items
+            Dim chk As CheckBox = lvi.FindControl("ck_chiusura_danno")
+            Dim ID As Label = lvi.FindControl("lb_id_rds")
+
+            If chk.Checked Then
+                'Response.Write("RDS: " & ID.Text & " Chk: SI<br>")
+                InsArrayValore(ArrayElencoChkRDS, ID.Text)
+            Else
+                'Response.Write("RDS: " & ID.Text & " Chk: NO<br>")
+            End If
+        Next
+
+        'Response.Write("Stato ODL: " & DropDown_stato_odl.SelectedValue)
+        If ck_alvoro_eseguito.Checked = True Then
+            'Response.Write("<br>Lavoro eseguito: SI")
+        Else
+            'Response.Write("<br>Lavoro eseguito: NO")
+        End If
+        'Response.End()
+
+        'For j = 0 To UBound(ArrayElencoChkRDS)
+        '    Response.Write(ArrayElencoChkRDS(j) & "<br>")
+        'Next
+
+        
+        'Tony 21-04-2023        
+        Dim DbcRiparato As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
+        DbcRiparato.Open()
+
+        Dim SqlRiparato As String = "select veicoli_evento_apertura_danno.*, veicoli.targa from veicoli_evento_apertura_danno, veicoli WITH(NOLOCK) WHERE veicoli_evento_apertura_danno.id_veicolo = veicoli.id and (veicoli.targa='" & lb_targa.Text & "') AND (veicoli_evento_apertura_danno.attivo = 1) and veicoli_evento_apertura_danno.da_riparare = 1 "
+        
+        If ArrayElencoChkRDS(0) <> "" Then
+            SqlRiparato = SqlRiparato & " and (veicoli_evento_apertura_danno.id_rds='" & ArrayElencoChkRDS(0) & "'"
+        End If
+        For j = 1 To UBound(ArrayElencoChkRDS)
+            If ArrayElencoChkRDS(j) <> "" Then
+                SqlRiparato = SqlRiparato & " or veicoli_evento_apertura_danno.id_rds='" & ArrayElencoChkRDS(j) & "'"
+            Else
+                Exit For
+            End If            
+        Next
+        SqlRiparato = SqlRiparato & ")"
+
+        'Response.Write("<br>" & SqlRiparato)
+        'Response.End()
+        
+        
+        Dim CmdRiparato As New Data.SqlClient.SqlCommand(SqlRiparato, DbcRiparato)
+
+        Try
+            Dim RsRiparato As Data.SqlClient.SqlDataReader
+            RsRiparato = CmdRiparato.ExecuteReader()
+            If RsRiparato.HasRows Then
+                Do While RsRiparato.Read
+                    If DropDown_stato_odl.SelectedValue = 6 And ck_alvoro_eseguito.Checked = True Then                        
+
+                        Dim DbcRiparato2 As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
+                        DbcRiparato2.Open()
+
+                        Dim CmdRiparato2 As New Data.SqlClient.SqlCommand("", DbcRiparato2)
+                        Dim SqlRiparato2 As String
+                        Dim SqlQueryRiparato2 As String
+
+                        Try                           
+                            If RsRiparato("id_non_addebito") & "" = "" Then 'Da addebitare
+                                Dim ValoreIncassato As String = ""
+                                'ValoreIncassato = RsRiparato("totale") * 1.22
+                                ValoreIncassato = CDbl(RsRiparato("totale")) - CDbl(RsRiparato("spese_postali"))
+                                ValoreIncassato = Replace(ValoreIncassato, ",", ".")
+                                'Response.Write("5- " & ValoreIncassato & "<br>")
+                                'Response.End()
+
+                                SqlRiparato2 = "update veicoli_evento_apertura_danno set da_riparare=0, incasso= '" & ValoreIncassato & "' WHERE (id_documento_apertura = '" & RsRiparato("id_documento_apertura") & "') AND (attivo = 1) "
+
+                                'Response.Write("<br>" & SqlRiparato2)
+                                'Response.End()
+
+                                CmdRiparato2 = New Data.SqlClient.SqlCommand(SqlRiparato2, DbcRiparato2)
+                                CmdRiparato2.ExecuteNonQuery()
+
+                                SqlQueryRiparato2 = "insert into query_log (data,utente,query) values('" & Now & "','" & Request.Cookies("SicilyRentCar")("nome") & "','" & Replace(SqlRiparato2, "'", "''") & "')"
+                                CmdRiparato2.CommandText = SqlQueryRiparato2
+                                'Response.Write(CmdRiparato2.CommandText & "<br/>")
+                                'Response.End()
+                                CmdRiparato2.ExecuteNonQuery()
+                            Else 'Non addebitare
+                                SqlRiparato2 = "update veicoli_evento_apertura_danno set da_riparare=0 WHERE (id_documento_apertura = '" & RsRiparato("id_documento_apertura") & "') AND (attivo = 1) "
+
+                                Response.Write("<br>" & SqlRiparato2)
+                                'Response.End()
+
+                                CmdRiparato2 = New Data.SqlClient.SqlCommand(SqlRiparato2, DbcRiparato2)
+                                CmdRiparato2.ExecuteNonQuery()
+
+                                SqlQueryRiparato2 = "insert into query_log (data,utente,query) values('" & Now & "','" & Request.Cookies("SicilyRentCar")("nome") & "','" & Replace(SqlRiparato2, "'", "''") & "')"
+                                CmdRiparato2.CommandText = SqlQueryRiparato2
+                                'Response.Write(CmdRiparato2.CommandText & "<br/>")
+                                'Response.End()
+                                CmdRiparato2.ExecuteNonQuery()
+                            End If
+                            
+                        Catch ex As Exception
+                            Libreria.genUserMsgBox(Page, ex.Message & " -- Salvataggio Riparato 2 Errore contattare amministratore del sistema.")
+                        End Try
+
+                        CmdRiparato2.Dispose()
+                        CmdRiparato2 = Nothing
+                        DbcRiparato2.Close()
+                        DbcRiparato2.Dispose()
+                        DbcRiparato2 = Nothing
+                    Else
+                        'Response.Write("Else")
+                        'Response.End()
+                    End If
+                Loop
+            End If
+            RsRiparato.Close()
+            RsRiparato = Nothing
+        Catch ex As Exception
+            Libreria.genUserMsgBox(Page, "Salvataggio Riparato ARES Errore contattare amministratore del sistema.")
+        End Try
+
+
+        CmdRiparato.Dispose()
+        DbcRiparato.Close()
+        CmdRiparato = Nothing
+        DbcRiparato = Nothing
+        'FINE Tony
 
         'Response.Write("Km uscita " & tx_km_uscita.Text)
         'Response.End()
@@ -2084,8 +2253,8 @@ Partial Class gestione_danni_edit_odl
                         'Session("carica_contratto") = "115119"
                         'Response.Redirect("contratti.aspx")
 
-                       
-                        
+
+
                     End If
 
                 Case enum_odl_stato.Chiuso
@@ -2124,7 +2293,7 @@ Partial Class gestione_danni_edit_odl
 
                         Catch ex As Exception
                             HttpContext.Current.Response.Write(ex.Message & " Chiusura ODL --- Errore contattare amministratore del sistema.")
-                        End Try                        
+                        End Try
                     End If
 
                 Case enum_odl_stato.Chiuso_Con_Continuazione_Noleggio

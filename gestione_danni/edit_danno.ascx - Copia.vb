@@ -2,10 +2,6 @@
 Imports System.Collections.Generic
 Imports AjaxControlToolkit
 
-Imports System.Drawing
-Imports System.Drawing.Imaging
-Imports funzioni_comuni_new_tony
-
 Partial Class gestione_danni_edit_danno
     Inherits System.Web.UI.UserControl
 
@@ -268,11 +264,7 @@ Partial Class gestione_danni_edit_danno
         End Select
     End Sub
 
-    Public Sub InitForm(ByVal id_evento As Integer, Optional ByVal id_danno As Integer = 0, Optional ByVal id_gruppo_evento As Integer = 0, Optional ByVal stato_rds As Integer = 0, Optional ByVal attesa_rds As Boolean = False)        
-        'Tony 21-07-2023 New Danni
-        InizializzaCampi()
-        'FINE Tony
-
+    Public Sub InitForm(ByVal id_evento As Integer, Optional ByVal id_danno As Integer = 0, Optional ByVal id_gruppo_evento As Integer = 0, Optional ByVal stato_rds As Integer = 0, Optional ByVal attesa_rds As Boolean = False)
         lb_stato_rds.Text = stato_rds
         lb_attesa_rds.text = attesa_rds
 
@@ -296,12 +288,10 @@ Partial Class gestione_danni_edit_danno
 
             Dim mio_macro_modello As veicoli_img_modelli = veicoli_img_modelli.getMacroModello(.id_veicolo)
             With mio_macro_modello
-                'img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\ares_stilizzata.jpg"
-                img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\" & .img_fronte
-                Response.Write("1.1-")
+                img_fronte.ImageUrl = "~\images\Mappe\" & .img_fronte
                 'r img_retro.ImageUrl = "~\images\Mappe\" & .img_retro
             End With
-            'ViewState("veicoli_img_modelli") = mio_macro_modello
+            ViewState("veicoli_img_modelli") = mio_macro_modello
 
             If id_danno = 0 Then
                 
@@ -372,10 +362,8 @@ Partial Class gestione_danni_edit_danno
             lb_id_ditta.Text = .id_ditta & ""
 
             Dim mio_macro_modello As veicoli_img_modelli = veicoli_img_modelli.getMacroModello(.id_veicolo)
-            With mio_macro_modello                
-                'img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\ares_stilizzata.jpg"
-                img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\" & .img_fronte
-                Response.Write("2.1-")
+            With mio_macro_modello
+                img_fronte.ImageUrl = "~\images\Mappe\" & .img_fronte
                 'r img_retro.ImageUrl = "~\images\Mappe\" & .img_retro
             End With
             ViewState("veicoli_img_modelli") = mio_macro_modello
@@ -438,7 +426,7 @@ Partial Class gestione_danni_edit_danno
         lb_id_a_carico_del_cliente.Text = Costanti.id_a_carico_del_cliente
 
         If Not Page.IsPostBack Then
-            Response.Write("No post Back EDIT")
+
             DropDownPosizione_DataBind()
             DropDownTipoDanno_DataBind()
             DropDownTipoDocumentoImg_DataBind()
@@ -452,247 +440,48 @@ Partial Class gestione_danni_edit_danno
             tab_mappe.ActiveTabIndex = 0
             Session("errorloadeditdanno") = "0"
         Else
-            Response.Write(" post Back EDIT ")
+
             ''''DA VERIFICARE 27.11.2020
 
             Dim mio_macro_modello As veicoli_img_modelli
             If IsNothing(ViewState("veicoli_img_modelli")) Then
 
                 mio_macro_modello = veicoli_img_modelli.getMacroModello(lb_id_veicolo.Text)
-                With mio_macro_modello                    
-                    'img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\ares_stilizzata.jpg"
-                    img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\" & .img_fronte
-                    Response.Write("3.1-")
+                With mio_macro_modello
+                    img_fronte.ImageUrl = "~\images\Mappe\" & .img_fronte
                     'r img_retro.ImageUrl = "~\images\Mappe\" & .img_retro
-                End With               
-
-
+                End With
                 ViewState("veicoli_img_modelli") = mio_macro_modello
-            Else
-                'Tony NEW Danni 14-07-2023
-                CaricaImgScematizzata(lb_id_veicolo.Text, lb_id_gruppo_evento.Text)                
-            End If
 
+            End If
             Try
                 mio_macro_modello = ViewState("veicoli_img_modelli")
             Catch ex As Exception
                 Response.Write("mio_macro_modello: " & ex.Message & "<br/>")
             End Try
 
+
             If lb_id_posizione_danno.Text = "" Then
                 lb_id_posizione_danno.Text = 0
             End If
 
-            If lblDanniNewInEdit.Text = "NO" Then
-                Tr2.Visible = True 'Posizione
-                Tr3.Visible = True 'Tipologia
-                DropDownEntita_F.Visible = True 'Entita
-
-                dropEntitaDanno.Visible = False 'Entita Danni New
-                TrFoto.Visible = False 'Foto
-
-                Try
-                    ' DisegnaPuntiMappa(1, True, Integer.Parse(lb_id_posizione_danno.Text))
-                    DisegnaPuntiMappa(mio_macro_modello.id, True, Integer.Parse(lb_id_posizione_danno.Text))
+            Try
+                'Eliminato solo x test DA REINSERIRE 
+                ' DisegnaPuntiMappa(1, True, Integer.Parse(lb_id_posizione_danno.Text))
+                DisegnaPuntiMappa(mio_macro_modello.id, True, Integer.Parse(lb_id_posizione_danno.Text))
 
 
-                    Session("errorloadeditdanno") = "0"
-                Catch ex As Exception
-                    'Trace.Write("Errore Disegno Punti: " & ex.Message)
-                    Response.Write("ErrorePageLoad: " & ex.Message & "<br/>")
-                    Session("errorloadeditdanno") = "1"
-                End Try
-            Else
-                Tr2.Visible = False 'Posizione
-                Tr3.Visible = False 'Tipologia
-                DropDownEntita_F.Visible = False 'Entita
+                Session("errorloadeditdanno") = "0"
+            Catch ex As Exception
+                'Trace.Write("Errore Disegno Punti: " & ex.Message)
+                Response.Write("ErrorePageLoad: " & ex.Message & "<br/>")
+                Session("errorloadeditdanno") = "1"
+            End Try
 
-                dropEntitaDanno.Visible = True 'Entita Danni New
-                TrFoto.Visible = True 'Foto               
-            End If
+
+
         End If
     End Sub
-
-    'Tony 17-07-2023
-    Protected Sub CaricaImgScematizzata(ByVal IdVeicolo As String, ByVal IdGruppoEvento As String)
-        Try
-            Dim Dbc As New Data.SqlClient.SqlConnection(ConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
-            Dbc.Open()
-
-            Dim Cmd As New Data.SqlClient.SqlCommand("select  immagine_schematizzata_new from MODELLI,veicoli WITH(NOLOCK) where MODELLI.ID_MODELLO = veicoli.id_modello and  veicoli.id = " & IdVeicolo, Dbc)
-            Response.Write(Cmd.CommandText & "<br><br>")
-            'Response.End()
-            Dim Rs As Data.SqlClient.SqlDataReader
-            Rs = Cmd.ExecuteReader()
-            If Rs.HasRows Then
-                Do While Rs.Read
-                    If Rs("immagine_schematizzata_new") <> "0" Then
-                        img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\" & Rs("immagine_schematizzata_new")
-                        lblDanniNewInEdit.Text = "SI"
-                        CaricaDanni(lb_id_evento.Text)
-                    Else
-                        img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\1_Fronte_0628776554.jpg"
-                        lblDanniNewInEdit.Text = "NO"
-                    End If
-
-                Loop
-            Else
-
-            End If
-
-            Rs.Close()
-            Dbc.Close()
-            Rs = Nothing
-            Dbc = Nothing
-
-        Catch ex As Exception
-            Libreria.genUserMsgBox(Page, ex.Message & " Carica Dati Img Schemattizzata --- Errore contattare amministratore del sistema.")
-        End Try
-    End Sub
-
-    Protected Sub InizializzaCampi()
-        dropEntitaDanno.SelectedValue = 0
-        txtCoordinate.Text = ""
-    End Sub
-    'FINE Tony
-
-    'Tony 21-07-2023 NEW DAnni
-    Protected Sub CaricaDanni(ByVal idEvento As String)
-        Dim ris As String = "0"
-
-        Try
-            Dim Dbc As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
-            Dbc.Open()
-
-            Dim sqlStr As String = "select id_veicolo from veicoli_evento_apertura_danno where id ='" & idEvento & "'"
-            'HttpContext.Current.Response.write(sqlStr & "<br>")
-
-            Dim Cmd As New Data.SqlClient.SqlCommand(sqlStr, Dbc)
-
-            Dim Rs As Data.SqlClient.SqlDataReader
-            Rs = Cmd.ExecuteReader()
-
-            If Rs.HasRows Then
-                Do While Rs.Read
-                    Try
-                        Dim Dbc2 As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
-                        Dbc2.Open()
-
-                        Dim sqlStr2 As String = "SELECT posizione_danno_new FROM veicoli_danni WHERE (id_veicolo = '" & Rs("id_veicolo") & "') AND (stato = 1) order by id"
-
-                        HttpContext.Current.Response.Write(sqlStr2 & "<br>")
-
-                        Dim Cmd2 As New Data.SqlClient.SqlCommand(sqlStr2, Dbc2)
-
-                        Dim Rs2 As Data.SqlClient.SqlDataReader
-                        Rs2 = Cmd2.ExecuteReader()
-
-                        If Rs2.HasRows Then
-                            Do While Rs2.Read
-                                If Not IsDBNull(Rs2(0)) Then
-                                    ris = Rs2(0)
-                                    DisegnaPunto(ris)
-                                End If
-                            Loop
-                        End If
-
-                        Rs2.Close()
-                        Rs2 = Nothing
-                        Cmd2.Dispose()
-                        Cmd2 = Nothing
-                        Dbc2.Close()
-                        Dbc2.Dispose()
-                        Dbc2 = Nothing
-
-                    Catch ex As Exception
-
-                    End Try
-                Loop
-            End If
-            Rs.Close()
-            Rs = Nothing
-            Cmd.Dispose()
-            Cmd = Nothing
-            Dbc.Close()
-            Dbc.Dispose()
-            Dbc = Nothing
-
-        Catch ex As Exception
-
-        End Try
-    End Sub
-
-    Protected Sub DisegnaPunto(ByVal punto As String)
-
-        'HttpContext.Current.Response.Write(punto & "<br>")
-        'HttpContext.Current.response.end()
-
-        Dim objFile
-        Dim NomeFile As String = ""
-        objFile = Server.CreateObject("Scripting.FileSystemObject")
-
-        ' Verifico con FileExist se il file esiste 
-        ' e rispondo di conseguenza
-        If objFile.FileExists("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & ".jpg") Then
-            NomeFile = "D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & ".jpg"
-        Else
-            NomeFile = "D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-web.jpg"
-        End If
-
-        Dim img As New Bitmap(NomeFile)
-        'Dim path = Server.MapPath("~\MappaturaDanni\Immagini\AUXares_stilizzata.jpg")
-        Dim CoordinataX As Integer, CoordinataY As Integer
-        Dim ArrayCoordinate(2) As String
-        Dim ArrayCoordinateXY(2) As String
-
-        ArrayCoordinate = Split(punto, ";")
-        ArrayCoordinateXY = Split(ArrayCoordinate(1), "-")
-
-        CoordinataX = Int(ArrayCoordinateXY(0)) - 15
-        CoordinataY = Int(ArrayCoordinateXY(1)) - 15
-
-        Dim g As Graphics = Graphics.FromImage(img)
-        Dim rett As New Rectangle(CoordinataX, CoordinataY, 20, 20)
-        Dim Penna As New Pen(System.Drawing.Color.Black())
-        Dim myBrush = New System.Drawing.SolidBrush(System.Drawing.Color.Black)
-
-        g.DrawEllipse(Penna, rett)
-        g.FillEllipse(myBrush, rett)
-
-        Dim Fpersonalizzata As New Font("ARIAL", 10, FontStyle.Bold)
-        Dim PuntoDiDisegno As New Rectangle(CoordinataX, CoordinataY + 1, 20, 20)
-
-        If Len(ArrayCoordinate(0)) = 1 Then
-            g.DrawString(" " & ArrayCoordinate(0), Fpersonalizzata, Brushes.White, PuntoDiDisegno)
-        Else
-            g.DrawString(ArrayCoordinate(0), Fpersonalizzata, Brushes.White, PuntoDiDisegno)
-        End If
-
-
-        img.Save("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg")
-        'Response.Write("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg")
-        'rinominaFile("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg")
-
-        Try
-            g.Dispose()
-            img.Dispose()
-            System.IO.File.Delete("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & ".jpg")
-            Rename("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg", "D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & ".jpg")
-        Catch ex As Exception
-            HttpContext.Current.Response.Write(ex.Message & " Rename FILE --- Errore contattare amministratore del sistema.")
-        End Try
-
-        'fileNameBig = "PassOE_" & txtCIG.Text & "_" & dropDitta.SelectedItem.Text & ".pdf"
-
-
-        'img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg"
-        img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & ".jpg"
-        'g.DrawRectangle(Penna, rett)
-
-        g.Dispose()
-        img.Dispose()
-    End Sub
-    'FINE Tony
 
     Public Sub DisegnaPuntiMappa(id_img_modello As Integer, Optional evidenzia_selezionato As Boolean = False, Optional id_posizione_danno As Integer = 0)
         'Trace.Write("DisegnaPuntiMappa: " & id_img_modello & " " & evidenzia_selezionato & " " & id_posizione_danno)
@@ -777,273 +566,77 @@ Partial Class gestione_danni_edit_danno
         'FINE Tony
     End Sub
 
-    Protected Sub btnSalvaNuovo_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+    ''r Protected Sub btnSalvaNuovo_R_Click(sender As Object, e As System.EventArgs) Handles btnSalvaNuovo_R.Click
+    '    SetVariabili(Tipo_Img_Mappa.Retro)
 
-        If lblDanniNewInEdit.Text = "SI" Then
-            Dim Messaggio As String = ""
+    '    btnSalvaNuovo_Click(sender, e)
+    'End Sub
 
-            If controllo_campi_ok() = 0 Then
-                'DropDownTipoDanno_F.BackColor = Drawing.Color.White
-                dropEntitaDanno.BackColor = Drawing.Color.White
+    Protected Sub btnSalvaNuovo_Click(sender As Object, e As System.EventArgs)
+        Dim mio_danno As veicoli_danni = New veicoli_danni
 
-                Dim Dbc As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
-                Dbc.Open()
+        'DropDownPosizione.Enabled = True    'abilita prima di recuperare valore ?? 23.06.2022
 
-                Dim Cmd As New Data.SqlClient.SqlCommand("", Dbc)
-                Dim Sql As String
-                Dim Sql2 As String
-                Dim SqlQuery As String
-
-                Try
-                    Select Case btnSalvaNuovo_F.Text
-                        Case Is = "Salva Nuovo Danno"
-                            ''Evento di Apertura
-                            ''Sql = "insert into danni_new (id_veicolo,stato,data_creazione,id_utente,posizione_danno,id_tipo_danno,entita_danno,nota) values('485','1','" & Today & "','1','" & txtCoordinate.Text & "','" & DropDownTipoDanno_F.SelectedValue & "','" & dropEntitaDanno.SelectedValue & "','" & tx_descrizione_F.Text & "')"
-                            'Sql = "INSERT INTO veicoli_evento_apertura_danno(attivo,id_veicolo,id_tipo_documento_apertura,id_documento_apertura,num_crv,data,nota,id_ditta,data_creazione,id_utente) " & _
-                            '      "values(0," & lb_id_veicolo.Text & ",1,112309544,0, CONVERT(datetime, '" & Today & "', 105),'" & Replace(tx_descrizione_F.Text, "'", "''") & "',1, CONVERT(datetime, '" & Now & "', 105),39)"
-
-                            'Response.Write(Sql & "<br/>")
-                            'Response.End()
-
-                            'Cmd = New Data.SqlClient.SqlCommand(Sql, Dbc)
-                            'Cmd.ExecuteNonQuery()
-
-                            'Sql2 = "SELECT @@IDENTITY FROM veicoli_evento_apertura_danno WITH(NOLOCK)"
-                            'Cmd = New Data.SqlClient.SqlCommand(Sql2, Dbc)
-                            'Session("veicoli_evento_apertura_danno") = Cmd.ExecuteScalar
-
-                            'SqlQuery = "insert into query_log (data,utente,query) values('" & Now & "','" & Request.Cookies("SicilyRentCar")("nome") & "','" & Replace(Sql, "'", "''") & "')"
-                            'Cmd.CommandText = SqlQuery
-                            ''Response.Write(Cmd.CommandText & "<br/>")
-                            ''Response.End()
-                            'Cmd.ExecuteNonQuery()
-
-
-                            'Danno                        
-                            Sql = "INSERT INTO veicoli_danni(attivo,id_veicolo,id_evento_apertura,stato,tipo_record,data_creazione,id_utente,stato_rds,id_ditta,descrizione,posizione_danno_new) " & _
-                                  "values(0,'" & lb_id_veicolo.Text & "','" & lb_id_evento.Text & "',1,1,CONVERT(datetime, '" & Now & "', 105),'" & Request.Cookies("SicilyRentCar")("IdUtente") & "',1,1,'" & Replace(tx_descrizione_F.Text, "'", "''") & "','" & txtCoordinate.Text & "')"
-
-                            Response.Write(Sql & "<br/>")
-                            'Response.End()
-
-                            Cmd = New Data.SqlClient.SqlCommand(Sql, Dbc)
-                            Cmd.ExecuteNonQuery()
-
-                            Sql2 = "SELECT @@IDENTITY FROM veicoli_danni WITH(NOLOCK)"
-                            Cmd = New Data.SqlClient.SqlCommand(Sql2, Dbc)
-                            Session("veicoli_danni") = Cmd.ExecuteScalar
-
-
-                            SqlQuery = "insert into query_log (data,utente,query) values('" & Now & "','" & Request.Cookies("SicilyRentCar")("nome") & "','" & Replace(Sql, "'", "''") & "')"
-                            Cmd.CommandText = SqlQuery
-                            'Response.Write(Cmd.CommandText & "<br/>")
-                            'Response.End()
-                            Cmd.ExecuteNonQuery()
-
-                            'Aggiornamento Evento Apertura con valori RDS                        
-                            Sql = "UPDATE veicoli_evento_apertura_danno set attivo=1, data_modifica= CONVERT(datetime, '" & Now & "', 105), id_utente_modifica='" & Request.Cookies("SicilyRentCar")("IdUtente") & "', id_rds='11230432', data_rds= CONVERT(datetime, '" & Now & "', 105),stato_rds=1 where id=" & Session("veicoli_evento_apertura_danno")
-
-                            Response.Write(Sql & "<br/>")
-                            Response.End()
-
-                            Cmd = New Data.SqlClient.SqlCommand(Sql, Dbc)
-                            Cmd.ExecuteNonQuery()
-
-                            SqlQuery = "insert into query_log (data,utente,query) values('" & Now & "','" & Request.Cookies("SicilyRentCar")("nome") & "','" & Replace(Sql, "'", "''") & "')"
-                            Cmd.CommandText = SqlQuery
-                            'Response.Write(Cmd.CommandText & "<br/>")
-                            'Response.End()
-                            Cmd.ExecuteNonQuery()
-
-
-                            'Foto                        
-                            InviaFile(FileUploadFoto, HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "public\", 2)
-
-                            'listRapporti.DataBind()
-
-                            'DropDownTipoDanno_F.SelectedValue = "0"
-                            dropEntitaDanno.SelectedValue = "0"
-                            tx_descrizione_F.Text = ""
-                        Case Is = "Modifica"
-
-                    End Select
-
-                Catch ex As Exception
-                    Libreria.genUserMsgBox(Page, ex.ToString & "Salvataggio Errore contattare amministratore del sistema.")
-                End Try
+        With mio_danno
+            .attivo = False
+            .tipo_record = tipo_record_danni.Danno_Carrozzeria
+            If Integer.Parse(lb_id_evento.Text) = 0 Then
+                .id_evento_apertura = Integer.Parse(Session("IdEventoApertura_mio"))
             Else
-                Select Case controllo_campi_ok()
-                    Case 1
-                        Messaggio = "Campo Obbligatorio."
-                        If Messaggio <> "" Then
-                            Libreria.genUserMsgBox(Page, Messaggio)
-                        End If
-
-                        dropEntitaDanno.BackColor = Drawing.Color.Yellow
-                        dropEntitaDanno.Focus()
-                    Case 2
-                        Messaggio = "Obbligatorio selezionare un danno."
-                        If Messaggio <> "" Then
-                            Libreria.genUserMsgBox(Page, Messaggio)
-                        End If
-
-                        dropEntitaDanno.BackColor = Drawing.Color.White
-                End Select
+                .id_evento_apertura = Integer.Parse(lb_id_evento.Text)
             End If
-        Else
-            Dim mio_danno As veicoli_danni = New veicoli_danni
 
-
-            With mio_danno
-                .attivo = False
-                .tipo_record = tipo_record_danni.Danno_Carrozzeria
-                If Integer.Parse(lb_id_evento.Text) = 0 Then
-                    .id_evento_apertura = Integer.Parse(Session("IdEventoApertura_mio"))
-                Else
-                    .id_evento_apertura = Integer.Parse(lb_id_evento.Text)
-                End If
-
-                If Integer.Parse(lb_id_veicolo.Text) = 0 Then
-                    .id_veicolo = Integer.Parse(Session("IdVeicolo_mio"))
-                Else
-                    .id_veicolo = Integer.Parse(lb_id_veicolo.Text)
-                End If
-
-                '.id_posizione_danno = Integer.Parse(DropDownPosizione.SelectedValue)
-                .id_posizione_danno = Integer.Parse(Request.Form("lblpos"))                 'il valore della posizione è recuperata dalla lbl perchè il ddl list viene valorizzato da java 23.06.2022 salvo
-                .id_tipo_danno = Integer.Parse(DropDownTipoDanno.SelectedValue)
-                .entita_danno = Integer.Parse(DropDownEntita.SelectedValue)
-                .descrizione = tx_descrizione.Text
-                If lb_id_ditta.Text <> "" Then
-                    .id_ditta = Integer.Parse(lb_id_ditta.Text)
-                End If
-
-                'Response.Write(.id_evento_apertura)
-                'Response.Write(.id_veicolo)
-                'Response.Write(.id_posizione_danno)
-                'Response.Write(.id_tipo_danno)
-                'Response.Write(.entita_danno)
-                'Response.Write(.descrizione)
-                'Response.Write(.id_ditta)
-
-                'Response.End()
-                .SalvaRecord()
-                ' lb_id_danno.Text = .SalvaRecord()
-
-                If Boolean.Parse(lb_attesa_rds.Text) Then
-                    ' ho richiamato questo modulo per aggiungere un danno in corso d'opera
-                    ' anche se il danno non risulta attivo ancora!!!
-                    ' lo diventa solo se viene salvato dal modulo di check_in!
-                    veicoli_gruppo_evento.AggiungiDanno(Integer.Parse(lb_id_gruppo_evento.Text), .id)
-                End If
-            End With
-
-            Libreria.genUserMsgBox(Page, "Danno salvato correttamente.")
-
-            RaiseEvent AggiornaElenco(Me, New EventArgs)
-
-            Dim mio_macro_modello As veicoli_img_modelli = ViewState("veicoli_img_modelli")
-
-            Try
-                DisegnaPuntiMappa(mio_macro_modello.id)
-            Catch ex As Exception
-                'Trace.Write("Errore Disegno Punti: " & ex.Message)
-            End Try
-
-            AzzeraDanno()
-        End If        
-    End Sub
-
-    'Tony 21-07-2023 New Danni
-    Protected Function controllo_campi_ok() As Integer
-        If dropEntitaDanno.SelectedValue = "0" Then
-            controllo_campi_ok = 1
-        ElseIf txtCoordinate.Text = "" Then
-            controllo_campi_ok = 2
-        Else
-            controllo_campi_ok = 0
-        End If
-    End Function
-
-    Protected Sub InviaFile(ByVal MioFileUpload As FileUpload, ByVal filePath As String, ByVal TipologiaDoc As Integer)
-        Response.Write(filePath)
-        Response.End()
-        Dim Messaggio As String = ""
-        If MioFileUpload.HasFile Then
-            Dim estensione As String = LCase(Right(MioFileUpload.FileName, 4))
-            If estensione = ".jpg" Or estensione = ".png" Then
-                ' Trace.Write("MioFileUpload.PostedFile.ContentLength:" & MioFileUpload.PostedFile.ContentLength)
-                If MioFileUpload.PostedFile.ContentLength <= 4000000 Then
-                    Dim Dbc As New Data.SqlClient.SqlConnection(Web.Configuration.WebConfigurationManager.ConnectionStrings("SicilyConnectionString").ConnectionString)
-                    Dbc.Open()
-
-                    Dim Cmd As New Data.SqlClient.SqlCommand("", Dbc)
-                    Dim Sql As String
-                    Dim Sql2 As String
-                    Dim SqlQuery As String
-
-                    Try
-                        Dim NomeFile As String
-                        NomeFile = generaNomeFile()
-
-                        Dim fileNameBig As String = MioFileUpload.FileName
-
-                        MioFileUpload.SaveAs(filePath & fileNameBig)
-                        'Response.Write(filePath & fileNameBig)
-
-                        If File.Exists(filePath & fileNameBig) Then
-
-                            Rename(filePath & fileNameBig, filePath & "foto_targa.jpg")
-                            fileNameBig = "foto_targa.jpg"
-
-                            Sql = "insert into veicoli_danni_foto (id_danno,data_creazione,tipo_documento,descrizione,riferimento_foto) " & _
-                                  " values('" & Replace(fileNameBig, "'", "''") & "','" & filePath & "','" & TipologiaDoc & "','" & TipologiaDoc & "')"
-                            Response.Write(Sql & "<br/>")
-                            Response.End()
-
-                            Cmd = New Data.SqlClient.SqlCommand(Sql, Dbc)
-                            Cmd.ExecuteNonQuery()
-
-                            SqlQuery = "insert into query_log (data,utente,query) values('" & Now & "','" & Request.Cookies("SicilyRentCar")("nome") & "','" & Replace(Sql, "'", "''") & "')"
-                            Cmd.CommandText = SqlQuery
-                            'Response.Write(Cmd.CommandText & "<br/>")
-                            'Response.End()
-
-                            Cmd.ExecuteNonQuery()
-
-                            ''Messaggio = "File correttamente salvata."
-                        End If
-                    Catch ex As Exception
-                        Response.Write(ex)
-                        Response.Write("<br><br>")
-                        Libreria.genUserMsgBox(Page, "Salvataggio Dati InvioFileFoto Errore contattare amministratore del sistema.")
-                        Response.Write(Cmd.CommandText)
-                    End Try
-
-                    Cmd.Dispose()
-                    Cmd = Nothing
-                    Dbc.Close()
-                    Dbc.Dispose()
-                    Dbc = Nothing
-                Else
-                    Messaggio = "Il file non può essere caricato perché supera 4MB!"
-                End If
+            If Integer.Parse(lb_id_veicolo.Text) = 0 Then
+                .id_veicolo = Integer.Parse(Session("IdVeicolo_mio"))
             Else
-                Messaggio = "Il file deve essere con estensione (JPG oppure PNG)"
+                .id_veicolo = Integer.Parse(lb_id_veicolo.Text)
             End If
-        Else
-            'Messaggio = "Selezionare un file da salvare."
-        End If
 
-        If Messaggio <> "" Then
-            Libreria.genUserMsgBox(Page, Messaggio)
-        End If
+            '.id_posizione_danno = Integer.Parse(DropDownPosizione.SelectedValue)
+            .id_posizione_danno = Integer.Parse(Request.Form("lblpos"))                 'il valore della posizione è recuperata dalla lbl perchè il ddl list viene valorizzato da java 23.06.2022 salvo
+            .id_tipo_danno = Integer.Parse(DropDownTipoDanno.SelectedValue)
+            .entita_danno = Integer.Parse(DropDownEntita.SelectedValue)
+            .descrizione = tx_descrizione.Text
+            If lb_id_ditta.Text <> "" Then
+                .id_ditta = Integer.Parse(lb_id_ditta.Text)
+            End If
 
-        'Response.Write(Page)
-        'Response.Write(Messaggio)
-        'Response.End()
+            'Response.Write(.id_evento_apertura)
+            'Response.Write(.id_veicolo)
+            'Response.Write(.id_posizione_danno)
+            'Response.Write(.id_tipo_danno)
+            'Response.Write(.entita_danno)
+            'Response.Write(.descrizione)
+            'Response.Write(.id_ditta)
+
+            'Response.End()
+            .SalvaRecord()
+            ' lb_id_danno.Text = .SalvaRecord()
+
+            If Boolean.Parse(lb_attesa_rds.Text) Then
+                ' ho richiamato questo modulo per aggiungere un danno in corso d'opera
+                ' anche se il danno non risulta attivo ancora!!!
+                ' lo diventa solo se viene salvato dal modulo di check_in!
+                veicoli_gruppo_evento.AggiungiDanno(Integer.Parse(lb_id_gruppo_evento.Text), .id)
+            End If
+        End With
+
+        Libreria.genUserMsgBox(Page, "Danno salvato correttamente.")
+
+        RaiseEvent AggiornaElenco(Me, New EventArgs)
+
+        Dim mio_macro_modello As veicoli_img_modelli = ViewState("veicoli_img_modelli")
+
+        Try
+            DisegnaPuntiMappa(mio_macro_modello.id)
+        Catch ex As Exception
+            'Trace.Write("Errore Disegno Punti: " & ex.Message)
+        End Try
+
+        AzzeraDanno()
+
+        ' Visibilita(DivVisibile.EditDocDanno)
     End Sub
-    'FINE Tony
 
     Protected Sub btnChiudiNuovo_F_Click(sender As Object, e As System.EventArgs) Handles btnChiudiNuovo_F.Click
         RaiseEvent ChiusuraForm(Me, New EventArgs)
@@ -1740,78 +1333,5 @@ Partial Class gestione_danni_edit_danno
         Dbc.Dispose()
         Dbc = Nothing
     End Sub
-
-    'Tony 18-07-2023 New Danni
-    Protected Sub img_fronte_Click(ByVal sender As Object, ByVal e As System.Web.UI.ImageClickEventArgs) Handles img_fronte.Click
-        'Dim img As New Bitmap("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-web.jpg")
-        'Dim path = Server.MapPath("~\MappaturaDanni\Immagini\AUXares_stilizzata.jpg")
-
-        Dim objFile
-        Dim NomeFile As String = ""
-        objFile = Server.CreateObject("Scripting.FileSystemObject")
-
-        ' Verifico con FileExist se il file esiste 
-        ' e rispondo di conseguenza
-        If objFile.FileExists("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & "_new.jpg") Then
-            System.IO.File.Delete("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & "_new.jpg")
-        End If
-        'Sviluppo/Produzione
-        NomeFile = "D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & ".jpg"
-
-        'In Locale
-        'NomeFile = "C:\Users\Tony Lazzara\Desktop\Area Web\SRC\ARES\Sviluppo\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & ".jpg"
-
-
-        Dim img As New Bitmap(NomeFile)
-
-
-        Dim CoordinataX As Point, CoordinataY As Integer
-
-        Dim g As Graphics = Graphics.FromImage(img)
-        Dim rett As New Rectangle(e.X - 7, e.Y - 6, 20, 20)
-        Dim Penna As New Pen(System.Drawing.Color.Black())
-        Dim myBrush = New System.Drawing.SolidBrush(System.Drawing.Color.Black)
-
-        g.DrawEllipse(Penna, rett)
-        g.FillEllipse(myBrush, rett)
-
-        Dim Fpersonalizzata As New Font("ARIAL", 10, FontStyle.Bold)
-        Dim PuntoDiDisegno As New Rectangle(e.X - 6, e.Y - 4, 20, 20)
-
-        'Conta numero di danni aperti sul veicolo
-        Dim ProssimoDanno As String = ContaNumeroDanni(lb_id_evento.Text) + 1
-        If Len(ProssimoDanno) = 1 Then
-            ProssimoDanno = " " & ProssimoDanno        
-        End If
-
-        g.DrawString(ProssimoDanno, Fpersonalizzata, Brushes.White, PuntoDiDisegno)
-
-        'Response.Write("X " & CInt(e.X) + 8 & "-" & CInt(e.Y) + 8)
-        txtCoordinate.Text = ProssimoDanno & ";" & CInt(e.X) + 8 & "-" & CInt(e.Y) + 8
-
-        img.Save("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg")
-        'Response.Write("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg")
-        'rinominaFile("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg")
-
-        Try
-            g.Dispose()
-            img.Dispose()
-            System.IO.File.Delete("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & "_new.jpg")
-            Rename("D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg", "D:\inetpub\wwwroot\ares.sicilyrentcar.it\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & "_new.jpg")
-        Catch ex As Exception
-            HttpContext.Current.Response.Write(ex.Message & " Rename FILE --- Errore contattare amministratore del sistema.")
-        End Try
-
-        'fileNameBig = "PassOE_" & txtCIG.Text & "_" & dropDitta.SelectedItem.Text & ".pdf"
-
-
-        'img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\" & Session.SessionID & ".jpg"
-        img_fronte.ImageUrl = "~\MappaturaDanni\Immagini\ares_stilizzata-" & lb_id_veicolo.Text & "_new.jpg"
-        'g.DrawRectangle(Penna, rett)
-
-        g.Dispose()
-        img.Dispose()
-    End Sub
-    'FINE Tony
 
 End Class
