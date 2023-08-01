@@ -1,0 +1,122 @@
+﻿<?xml version="1.0"?>
+<!-- 
+    Nota: come alternativa alla modifica manuale del file, è possibile utilizzare lo 
+    strumento di amministrazione Web per configurare le impostazioni dell'applicazione. Utilizzare il comando 
+    Configurazione ASP.NET del menu Sito Web di Visual Studio.
+    Un elenco completo di impostazioni e commenti è disponibile nel file 
+    machine.config.comments che si trova in genere in 
+    \Windows\Microsoft.Net\Framework\v2.x\Config 
+-->
+<configuration>
+  <appSettings>
+    <!-- ATTENZIONE: valorizzare correttamente anche tutte le altre voci se viene modificato l'utente anche nella sezione impersonate!-->
+    <add key="Mail_SMTP" value=""/>
+    <add key="Mail_ufficio_multe" value=""/>
+    <add key="POSTimeout" value="60"/>
+    <add key="PathTransazionePOS" value="D:\TransazioniPOS\"/>
+    <add key="DestMailStopSale" value="system@sicilyrentcars.it"/>
+    <add key="DestCCMailStopSale" value="system@sicilyrentcars.it"/>
+    <add key="DriveDollar" value=""/>
+    <add key="PathOutputDollar" value=""/>
+    <add key="PathInputDollar" value=""/>
+    <add key="LoginDollar" value=""/>
+    <add key="PasswordDollar" value=""/>
+    <add key="DriveThrifty" value=""/>
+    <add key="PathOutputThrifty" value=""/>
+    <add key="PathInputThrifty" value=""/>
+    <add key="LoginThrifty" value=""/>
+    <add key="PasswordThrifty" value=""/>
+    <add key="PathInputR55" value=""/>
+    <add key="PathOutputR55" value=""/>
+    <add key="URL_R55" value=""/>
+    <add key="PathPerStampaPdf" value="D:\inetpub\wwwroot\ares.sicilyrentcar.it\wkhtmltopdf\"/>
+    <add key="PathAssolutaSitoPerPDF" value="http://ares.sicilyrentcar.it/"/>
+    <add key="PathExportFatture" value="D:\Ribaltamento\ExportFatture\"/>
+    <add key="PathFattureOttico" value="D:\Ottico\"/>
+    <add key="PathFatture" value="D:\Fatturazione\"/>
+  </appSettings>
+  <connectionStrings>
+    <add name="SicilyConnectionString" connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=Autonoleggio_SRC;Persist Security Info=True;MultipleActiveResultSets=true;Max Pool Size=50000;Pooling=True;User ID=sa;Password=SqlServer$2019;Connect Timeout=600;" providerName="System.Data.SqlClient"/>
+    <add name="SicilyTimbratureConnectionString" connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=timbrature;Persist Security Info=True;Max Pool Size=50000;Pooling=True;User ID=sa;Password=SqlServer$2019;Connect Timeout=600;" providerName="System.Data.SqlClient"/>
+	<!--<add name="SicilyConnectionString"
+       providerName="System.Data.SqlClient"
+       connectionString="Data Source=.\SQLEXPRESS;
+    Initial Catalog=sviluppo_SRC;Integrated Security=True;User Id=sa;password=SqlServer$2019;MultipleActiveResultSets=True;"/>-->
+  </connectionStrings>
+  <system.net>
+    <mailSettings>
+      <smtp>
+        <network host=""/>
+      </smtp>
+    </mailSettings>
+  </system.net>
+  <!--
+    For a description of web.config changes see http://go.microsoft.com/fwlink/?LinkId=235367.
+
+    The following attributes can be set on the <httpRuntime> tag.
+      <system.Web>
+        <httpRuntime targetFramework="4.7.2" />
+      </system.Web>
+  -->
+  <system.web>
+    <!-- Da eliminare quando diventa ambiente di produzione l'opzione trace!!!! -->
+    <!-- <trace enabled="true" localOnly="false" requestLimit="40"/> -->
+    <!-- 
+            Impostare compilation debug="true" per inserire i 
+            simboli di debug nella pagina compilata. Poiché tale
+            operazione ha effetto sulle prestazioni, impostare questo valore su true 
+            solo durante lo sviluppo.
+        -->
+    <compilation debug="true" targetFramework="4.7.2"/>
+    <!--
+            La sezione <authentication> consente di configurare 
+            la modalità di autenticazione della sicurezza utilizzata da 
+            ASP.NET per identificare un utente in ingresso. 
+      
+  
+      <authentication mode="Windows"/>
+      <identity impersonate="true" userName="administrator" password="paperino"/> -->
+    <!--
+            La sezione <customErrors> consente di configurare 
+            l'operazione da eseguire in caso di errore non gestito 
+            durante l'esecuzione di una richiesta. In particolare, 
+            consente agli sviluppatori di configurare le pagine di errore HTML 
+            in modo che vengano visualizzate al posto dell'analisi dello stack dell'errore.
+
+        <customErrors mode="RemoteOnly" defaultRedirect="GenericErrorPage.htm">
+            <error statusCode="403" redirect="NoAccess.htm" />
+            <error statusCode="404" redirect="FileNotFound.htm" />
+        </customErrors>
+      -->
+    <customErrors mode="Off"/>
+	
+    <!--<identity impersonate="true"/>-->
+    <pages controlRenderingCompatibilityVersion="3.5" clientIDMode="AutoID"/>
+	
+	 <!-- maxRequestLength for asp.net, 30 MB in KB 30720 /  15MB in Kb 15360/ --> 
+   <httpRuntime maxRequestLength="30720" ></httpRuntime> 
+      
+	
+  </system.web>
+  <system.webServer>
+    <defaultDocument>
+      <files>
+        <clear/>
+        <add value="default.aspx"/>
+        <add value="Default.htm"/>
+        <add value="Default.asp"/>
+        <add value="index.htm"/>
+        <add value="index.html"/>
+        <add value="iisstart.htm"/>
+      </files>
+    </defaultDocument>
+	
+	 <security> 
+      <requestFiltering> 
+         <!-- maxAllowedContentLength, for IIS, in bytes 15 MB/15728640  30mb/31457280  --> 
+         <requestLimits maxAllowedContentLength="31457280" ></requestLimits>
+      </requestFiltering> 
+   </security>
+	
+  </system.webServer>
+</configuration>
