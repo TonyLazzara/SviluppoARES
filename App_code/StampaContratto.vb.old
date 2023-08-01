@@ -1,0 +1,165 @@
+﻿Imports System
+Imports System.IO
+Imports System.Web
+Imports System.Web.UI
+
+Imports iTextSharp
+Imports iTextSharp.text
+Imports iTextSharp.text.pdf
+Imports iTextSharp.text.xml
+
+Public Class DatiStampaContratto
+    Public conducente1 As String
+    Public conducente2 As String
+    Public costo As String
+    Public costounitarioscontato As String
+    Public extra_e_penali As String
+    Public fatturare_a As String
+    Public note As String ' Inizia in  maiscolo adesso: Nota
+    Public qta As String ' è stato modificato il nome: quantitahttp://src.entermed.it/Bin/itextsharp.dll
+    Public ran As String
+    Public resn As String
+    Public rientro_previsto As String
+    Public sconto As String
+    Public totale As String
+    Public uscita As String
+    Public vari As String
+    Public veicolo As String
+    Public voucher As String
+    Public voucher_gg As String
+    Public voucher_n As String
+    Public rientro As String
+    Public iva As String
+    Public imponibile As String
+    Public pagamenti As String
+    Public firma As Boolean
+End Class
+
+Public Class StampaContratto
+
+    Public Shared Function GeneraDocumento(mie_dati As DatiStampaContratto, Optional ByVal nazione As String = "") As MemoryStream
+
+        Dim err_n As Integer = 0
+
+
+        Dim documento As String
+
+        If nazione <> "ITALIA" Then
+            documento = "ModuloDiNoleggioEng.pdf"
+        Else
+            documento = "ModuloDiNoleggio.pdf"
+        End If
+
+
+        '  Dim pdfTemplate As String = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\modelli_documenti\ModuloDiNoleggio.pdf"
+        Dim pdfTemplate As String = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\modelli_documenti\" & documento
+
+        ' HttpContext.Current.Response.Write("PDF Template : <br/>" & pdfTemplate.ToString & "<br/>")
+        err_n = 1
+        Dim PdfReader As PdfReader = New PdfReader(pdfTemplate)
+        ' HttpContext.Current.Response.Write("nn: " & err_n & "<br/>")
+        err_n = 2
+        Dim PdfStamper As PdfStamper = Nothing
+        ' HttpContext.Current.Response.Write("nn: " & err_n & "<br/>")
+        err_n = 3
+        Dim ms As MemoryStream = Nothing
+        ' HttpContext.Current.Response.Write("nn: " & err_n & "<br/>")
+        err_n = 4
+
+        Try
+            ms = New MemoryStream()
+            '    HttpContext.Current.Response.Write("nn: " & err_n & "<br/>")
+            err_n = 5
+            PdfStamper = New PdfStamper(PdfReader, ms)
+            err_n = 6
+            Dim pdfFormFields As AcroFields = PdfStamper.AcroFields
+            err_n = 7
+
+            With mie_dati
+                pdfFormFields.SetField("conducente1", .conducente1)
+                err_n = 8
+
+
+                pdfFormFields.SetField("conducente2", .conducente2)
+                pdfFormFields.SetField("costo", .costo)
+                pdfFormFields.SetField("costounitarioscontato", .costounitarioscontato)
+                pdfFormFields.SetField("extra_e_penali", .extra_e_penali)
+                pdfFormFields.SetField("fatturare_a", .fatturare_a)
+                pdfFormFields.SetField("Note", .note)
+                pdfFormFields.SetField("quantita", .qta)
+                pdfFormFields.SetField("ran", .ran)
+                pdfFormFields.SetField("resn", .resn)
+                pdfFormFields.SetField("rientro_previsto", .rientro_previsto)
+                pdfFormFields.SetField("sconto", .sconto)
+                pdfFormFields.SetField("totale", .totale)
+                pdfFormFields.SetField("uscita", .uscita)
+                pdfFormFields.SetField("vari", .vari)
+                pdfFormFields.SetField("veicolo", .veicolo)
+                pdfFormFields.SetField("voucher", .voucher)
+                pdfFormFields.SetField("voucher_gg", .voucher_gg)
+                pdfFormFields.SetField("voucher_n", .voucher_n)
+                pdfFormFields.SetField("rientro", .rientro)
+                pdfFormFields.SetField("IVA", .iva)
+                pdfFormFields.SetField("imponibile", .imponibile)
+                pdfFormFields.SetField("pagamenti", .pagamenti)
+                err_n = 9
+                Dim ran_img As String = .ran
+                Dim pathfilefirma As String = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\"
+
+                If .firma Then
+
+                    'solo x test deve verificare se c'è il file firma altrimenti lo crea SOLO x TEST
+
+                    If IO.File.Exists(pathfilefirma & ran_img & ".png") = False Then
+                        IO.File.Copy(pathfilefirma & "testfilefirma.png", pathfilefirma & ran_img & ".png")
+                    End If
+
+
+                    If nazione = "ITALIA" Then
+                        Dim img_firma As Image
+                        img_firma = Image.GetInstance(New Uri(HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\" & ran_img & ".png"))
+                        PdfStamper.GetOverContent(1).AddImage(img_firma, 80, 0, 0, 40, 400, 15)
+                        PdfStamper.GetOverContent(1).AddImage(img_firma, 160, 0, 0, 80, 380, 130)
+                        PdfStamper.GetOverContent(2).AddImage(img_firma, 80, 0, 0, 50, 420, -5)
+                    Else
+                        Dim img_firma As Image
+                        img_firma = Image.GetInstance(New Uri(HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\" & ran_img & ".png"))
+                        PdfStamper.GetOverContent(1).AddImage(img_firma, 80, 0, 0, 40, 410, 15)
+                        PdfStamper.GetOverContent(1).AddImage(img_firma, 120, 0, 0, 60, 400, 150)
+                        PdfStamper.GetOverContent(2).AddImage(img_firma, 80, 0, 0, 40, 420, 40)
+                    End If
+
+                End If
+
+                err_n = 10
+            End With
+
+            ' Dim position As Double() = PdfStamper.AcroFields.GetFieldPositions("extra_e_penali")
+            'Dim page As Double = 1
+            'Dim llx As Double = position(1)
+            'Dim lly As Double = position(2)
+            'Dim urx As Double = position(3)
+            'Dim ury As Double = position(4)
+            ' PdfStamper.MoreInfo = info
+            '   Dim img As Image = Image.GetInstance(New Uri(HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\images\mappe\1_Fronte_0628776554.jpg"))
+
+            '   PdfStamper.GetOverContent(1).AddImage(img, 540, 0, 0, img.Height, 580, 650)
+            err_n = 11
+            PdfStamper.Close()
+            err_n = 12
+            PdfReader.Close()
+            err_n = 13
+
+
+        Catch ex As Exception
+            'HttpContext.Current.Trace.Write("Errore in GeneraDocumento:err_n_GenDOC:" & err_n & "<br/>" & ex.Message)
+            HttpContext.Current.Response.Write("Errore in GeneraDocumento:err_n_GenDOC:" & err_n & "<br/>" & ex.Message)
+        End Try
+
+        Return ms
+
+    End Function
+
+
+
+End Class

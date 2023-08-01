@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+
+public class ConvertImageTrasparent
+{
+	
+   public Boolean  ConvertImageTrasparent(string pathTofileSrc, string pathTofileDst) 
+	{
+
+        Boolean ris;
+        ris = false;
+
+        try
+        {
+
+            string pf_src;
+        pf_src = pathTofileSrc; //@"D:\Siti2\Sicilirentcar.it.ares\firme_contratti\pick_up\202101584.png";
+
+        byte[] ni = GetTransparentArrayFromFileWithDelete(pf_src);
+
+        string pf_dst;
+        pf_dst = pathTofileDst //@"D:\Siti2\Sicilirentcar.it.ares\firme_contratti\pick_up\202101584_trasp.png";
+
+        FileStream fs = new FileStream(pf_dst, FileMode.OpenOrCreate, FileAccess.Write);
+        fs.Write(ni, 0, System.Convert.ToInt32(ni.Length));
+        fs.Close();
+        
+            
+            ris = true;
+
+        }
+        catch
+        {
+
+        }
+
+        return ris;
+
+
+    }
+
+
+   public static byte[] GetTransparentArrayFromFileWithDelete(string pathToFile)
+        
+   {
+
+            byte[] newImage = new byte[0];
+            string error = string.Empty;
+
+            try
+            {
+
+                using (Bitmap bmp = new Bitmap(pathToFile))
+                {
+                    Color pixel = bmp.GetPixel(0, 0);
+                    if (pixel.A != 0)
+                    {
+                        // Make backColor transparent for myBitmap.
+                        bmp.MakeTransparent(Color.Transparent);
+
+                        ImageConverter converter = new ImageConverter();
+                        newImage = (byte[])converter.ConvertTo(bmp, typeof(byte[]));
+                        bmp.Dispose();
+                    }
+                    else
+                    {
+                        FileStream fs = new FileStream(pathToFile, FileMode.OpenOrCreate, FileAccess.Read);
+                        newImage = new byte[fs.Length];
+                        fs.Read(newImage, 0, System.Convert.ToInt32(fs.Length));
+                        fs.Close();
+
+                    }
+                }
+
+                //File.Delete(pathToFile);  //in produzione elimina il file originale
+            }
+            catch
+            {
+
+            }
+            return newImage;
+        }
+
+
+
+}

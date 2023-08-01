@@ -1,0 +1,594 @@
+﻿Imports System
+Imports System.IO
+Imports System.Web
+Imports System.Web.UI
+
+Imports iTextSharp
+Imports iTextSharp.text
+Imports iTextSharp.text.pdf
+Imports iTextSharp.text.xml
+
+Imports ConvertImgTransparent       'aggiunto  09.12.2021 1750
+Imports funzioni_comuni
+
+Imports System.Net
+
+
+Public Class DatiStampaContratto
+    Public conducente1 As String
+    Public conducente2 As String
+    Public costo As String
+    Public costounitarioscontato As String
+    Public extra_e_penali As String
+    Public fatturare_a As String
+    Public note As String ' Inizia in  maiscolo adesso: Nota
+    Public qta As String ' è stato modificato il nome: quantitahttp://src.entermed.it/Bin/itextsharp.dll
+    Public ran As String
+    Public resn As String
+    Public rientro_previsto As String
+    Public sconto As String
+    Public totale As String
+    Public uscita As String
+    Public vari As String
+    Public veicolo As String
+    Public voucher As String
+    Public voucher_gg As String
+    Public voucher_n As String
+    Public rientro As String
+    Public iva As String
+    Public imponibile As String
+    Public pagamenti As String
+    Public firma As Boolean
+    Public statusRA As String ''05.05.2022 per verificare quale status viene passato per verificare firma anche al rientro
+
+End Class
+
+Public Class StampaContratto
+
+    Public Shared Function GeneraDocumento(mie_dati As DatiStampaContratto, Optional ByVal nazione As String = "", Optional ByVal id_nazione As String = "", Optional tipostampa As String = "uscita") As MemoryStream
+
+        Dim err_n As Integer = 0
+
+        'se id_nazione= 16 Italia
+
+        Dim documento As String
+
+        'If UCase(nazione) <> "ITALIA" Then
+        'documento = "ModuloDiNoleggioEng.pdf"
+        'Else
+
+        'controlla id_nazione 23.02.2022
+        If id_nazione <> "16" Then
+                documento = "ModuloDiNoleggioEng.pdf"
+            Else
+                documento = "ModuloDiNoleggio.pdf"
+            End If
+
+        'End If
+
+
+
+        '  Dim pdfTemplate As String = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\modelli_documenti\ModuloDiNoleggio.pdf"
+        Dim pdfTemplate As String = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\modelli_documenti\" & documento
+
+        ' HttpContext.Current.Response.Write("PDF Template : <br/>" & pdfTemplate.ToString & "<br/>")
+        err_n = 1
+        Dim PdfReader As PdfReader = New PdfReader(pdfTemplate)
+        ' HttpContext.Current.Response.Write("nn: " & err_n & "<br/>")
+        err_n = 2
+        Dim PdfStamper As PdfStamper = Nothing
+        ' HttpContext.Current.Response.Write("nn: " & err_n & "<br/>")
+        err_n = 3
+        Dim ms As MemoryStream = Nothing
+        ' HttpContext.Current.Response.Write("nn: " & err_n & "<br/>")
+        err_n = 4
+
+        Try
+            ms = New MemoryStream()
+            '    HttpContext.Current.Response.Write("nn: " & err_n & "<br/>")
+            err_n = 5
+            PdfStamper = New PdfStamper(PdfReader, ms)
+            err_n = 6
+            Dim pdfFormFields As AcroFields = PdfStamper.AcroFields
+            err_n = 7
+
+            With mie_dati
+                pdfFormFields.SetField("conducente1", .conducente1)
+                err_n = 8
+
+
+                pdfFormFields.SetField("conducente2", .conducente2)
+                pdfFormFields.SetField("costo", .costo)
+                pdfFormFields.SetField("costounitarioscontato", .costounitarioscontato)
+                pdfFormFields.SetField("extra_e_penali", .extra_e_penali)
+                pdfFormFields.SetField("fatturare_a", .fatturare_a)
+                pdfFormFields.SetField("Note", .note)
+                pdfFormFields.SetField("quantita", .qta)
+                pdfFormFields.SetField("ran", .ran)
+                pdfFormFields.SetField("resn", .resn)
+                pdfFormFields.SetField("rientro_previsto", .rientro_previsto)
+                pdfFormFields.SetField("sconto", .sconto)
+                pdfFormFields.SetField("totale", .totale)
+                pdfFormFields.SetField("uscita", .uscita)
+                pdfFormFields.SetField("vari", .vari)
+                pdfFormFields.SetField("veicolo", .veicolo)
+                pdfFormFields.SetField("voucher", .voucher)
+                pdfFormFields.SetField("voucher_gg", .voucher_gg)
+                pdfFormFields.SetField("voucher_n", .voucher_n)
+                pdfFormFields.SetField("rientro", .rientro)
+                pdfFormFields.SetField("IVA", .iva)
+                pdfFormFields.SetField("imponibile", .imponibile)
+                pdfFormFields.SetField("pagamenti", .pagamenti)
+                err_n = 9
+                Dim ran_img As String = .ran
+                Dim pathfilefirma As String = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\"
+
+                Dim statusRA As String = .statusRA   '05.05.2022
+
+                Dim filefirma As String = pathfilefirma & ran_img & ".png"
+
+                'di quale contratto si tratta uscita o rientro 10.05.2022
+
+                Dim firma As String = .firma
+
+                'verifica se contratto firmato o se contratto di rientro aggiunto status "4" 14.07.2022 salvo
+                If .firma Or statusRA = "8" Or statusRA = "4" Then
+
+                    Dim filefirmaPresente As Boolean = False
+
+                    'solo x test deve verificare se c'è il file firma altrimenti lo crea SOLO x TEST
+
+                    If tipostampa = "rientro" Then 'si tratta del contratto di rientro
+                        filefirma = pathfilefirma & ran_img & "_RB.png"            'il nome del file img è diverso 
+                    End If
+
+
+                    If IO.File.Exists(filefirma) = False Then 'manca il file firma
+                        'se status 8 o 4 verifica e crea file firma 14.07.2022 
+                        If statusRA = "8" Or statusRA = "4" Or tipostampa = "rientro" Then
+                            filefirmaPresente = funzioni_comuni_new.VerificaFileFirma(ran_img, filefirma, statusRA)
+                        Else
+                            'nel caso di uscita nn è presente il file firma di uscita e nn può essere creato 13.07.2022
+                            filefirmaPresente = False     'manca 06.07.2022 salvo
+                        End If
+                    Else
+                        filefirmaPresente = True    'è presente il file firma originale 10.12.2021
+                    End If
+
+                    '# converti img con sfondo trasparente 09.12.2021 1551
+                    Dim firma_def As String = ran_img & ".png"
+                    If tipostampa = "rientro" Then
+                        firma_def = ran_img & "_RB.png"
+                    End If
+                    Dim firma_trasp As String = ran_img & "-trasp.png"
+                    If tipostampa = "rientro" Then
+                        firma_trasp = ran_img & "_RB-trasp.png"
+                    End If
+                    Dim path_file_firma As String = pathfilefirma & ran_img & ".png"
+                    If tipostampa = "rientro" Then
+                        firma_trasp = pathfilefirma & ran_img & "_RB.png"
+                    End If
+
+                    Dim path_file_firma_trasp As String = pathfilefirma & ran_img & "-trasp.png"
+                    If tipostampa = "rientro" Then
+                        firma_trasp = ran_img & "_RB-trasp.png"
+                        path_file_firma_trasp = pathfilefirma & firma_trasp
+                        path_file_firma = pathfilefirma & firma_def
+                    End If
+
+                    'verifica se è presente il filefirma originale
+                    If filefirmaPresente = True Then
+                        'se presente ...
+                        ' ... verifica se presente il filefirma Trasparente (creato in precedenza) se manca lo crea  09.12.2021 1811
+                        If IO.File.Exists(path_file_firma_trasp) = False Then
+                            'richiama la funzione che restituisce boolean 
+                            'se vero converte la firma con sfondo trasparente
+                            Dim esito_convert As Boolean = ConvertImgTransparent.ConvertImage(path_file_firma, path_file_firma_trasp)
+                            'se esito della conversione è True imposta la firma con sfondo trasparente
+                            If esito_convert = True Then
+                                firma_def = firma_trasp
+                            End If
+                        Else
+                            'se già presente il filefirma trasp lo imposta per la firma definitiva
+                            firma_def = firma_trasp
+                        End If
+                    End If
+                    'se manca il filefirma lascia il filefirmaTest
+
+                    '## end converti img con sfondo trasparente
+
+                    If filefirmaPresente = True Then        'se presente firma la inserisce 06.07.2022 salvo --> genera_documento
+
+                        If nazione = "ITALIA" Or nazione = "16" Then
+                            Dim img_firma As Image
+                            img_firma = Image.GetInstance(New Uri(HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\" & firma_def))
+                            PdfStamper.GetOverContent(1).AddImage(img_firma, 80, 0, 0, 40, 400, 15)
+                            PdfStamper.GetOverContent(1).AddImage(img_firma, 160, 0, 0, 80, 380, 130)
+                            PdfStamper.GetOverContent(2).AddImage(img_firma, 80, 0, 0, 50, 420, -5)
+                        Else
+                            Dim img_firma As Image
+                            img_firma = Image.GetInstance(New Uri(HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\" & firma_def))
+                            PdfStamper.GetOverContent(1).AddImage(img_firma, 80, 0, 0, 40, 410, 15)
+                            PdfStamper.GetOverContent(1).AddImage(img_firma, 120, 0, 0, 60, 400, 150)
+                            PdfStamper.GetOverContent(2).AddImage(img_firma, 80, 0, 0, 40, 420, 40)
+                        End If
+
+                    Else
+                        'se contratto nn firmato da registrazione db
+
+                    End If
+                End If
+
+
+                err_n = 10
+            End With
+
+            ' Dim position As Double() = PdfStamper.AcroFields.GetFieldPositions("extra_e_penali")
+            'Dim page As Double = 1
+            'Dim llx As Double = position(1)
+            'Dim lly As Double = position(2)
+            'Dim urx As Double = position(3)
+            'Dim ury As Double = position(4)
+            ' PdfStamper.MoreInfo = info
+            '   Dim img As Image = Image.GetInstance(New Uri(HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\images\mappe\1_Fronte_0628776554.jpg"))
+
+            'PdfStamper.GetOverContent(1).AddImage(img, 540, 0, 0, img.Height, 580, 650)
+            err_n = 11
+            PdfStamper.Close()
+            err_n = 12
+            PdfReader.Close()
+            err_n = 13
+
+            'elimina il file img temp
+
+            'test scrittura file log error
+            'funzioni_comuni_new.WriteLogError("erroreTest-StampaContratto.generaDocumento")
+
+        Catch ex As Exception
+            'HttpContext.Current.Trace.Write("Errore in GeneraDocumento:err_n_GenDOC:" & err_n & "<br/>" & ex.Message)
+            'HttpContext.Current.Response.Write("Errore in GeneraDocumento:err_n_GenDOC:" & err_n & "<br/>" & ex.Message)
+
+            funzioni_comuni_new.WriteLogError("erroreTest-StampaContratto.generaDocumento:" & vbCrLf & ex.Message)
+
+
+        End Try
+
+        Return ms
+
+    End Function
+
+    Public Shared Function GeneraDocumentoPDF(mie_dati As DatiStampaContratto, numcontratto As String, Optional ByVal nazione As String = "", Optional tipostampa As String = "uscita") As String
+
+        'creata funzione dalla stampa per la creazione del file PDF da Salvare 03.02.2022
+        'restituisce il percorso del file da allegare alla email
+        'vuoto errore
+
+        Dim ris As String = ""
+
+
+        Dim err_n As Integer = 0
+
+        Try
+
+            Dim documento As String
+
+            'aggiunto salvo 08.11.2022
+            If UCase(nazione) = "ITALIA" Or nazione = "16" Then
+                documento = "ModuloDiNoleggio.pdf"
+            Else
+                documento = "ModuloDiNoleggioEng.pdf"
+            End If
+
+            'sostituito con codice delle righe superiori
+            'If nazione <> "ITALIA" Then
+            '    documento = "ModuloDiNoleggioEng.pdf"
+            'Else
+            '    documento = "ModuloDiNoleggio.pdf"
+            'End If
+
+
+            Dim pdfTemplate As String = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\modelli_documenti\" & documento
+
+            Dim newDir As String = HttpContext.Current.Server.MapPath("\allegati_pren_cnt\" & numcontratto)
+
+            Dim newFile As String = HttpContext.Current.Server.MapPath("\allegati_pren_cnt\" & numcontratto & "\RA_" & numcontratto & ".pdf") 'sigla contratto rientro RB
+            If tipostampa = "rientro" Then
+                newFile = HttpContext.Current.Server.MapPath("\allegati_pren_cnt\" & numcontratto & "\RB_" & numcontratto & ".pdf")     'sigla contratto rientro RB
+            End If
+
+            'crea cartella se non esiste
+            If Directory.Exists(newDir) = False Then
+                Directory.CreateDirectory(newDir)
+            End If
+
+            'se file da creare esiste lo elimina e lo ricrea 11.03.2022
+            If File.Exists(newFile) Then
+                File.Delete(newFile)
+            End If
+
+
+            'Return False 'test
+            'Exit Function 'test
+
+
+            Using file_stream As FileStream = New FileStream(newFile, FileMode.Create)
+                Dim myPdfReader As PdfReader = New PdfReader(pdfTemplate)
+
+                Using myPdfStamper As PdfStamper = New PdfStamper(myPdfReader, file_stream)
+
+                    Dim pdfFormFields As AcroFields = myPdfStamper.AcroFields
+
+                    With mie_dati
+
+                        pdfFormFields.SetField("conducente1", .conducente1)
+                        err_n = 8
+
+                        pdfFormFields.SetField("conducente2", .conducente2)
+                        pdfFormFields.SetField("costo", .costo)
+                        pdfFormFields.SetField("costounitarioscontato", .costounitarioscontato)
+                        pdfFormFields.SetField("extra_e_penali", .extra_e_penali)
+                        pdfFormFields.SetField("fatturare_a", .fatturare_a)
+                        pdfFormFields.SetField("Note", .note)
+                        pdfFormFields.SetField("quantita", .qta)
+                        pdfFormFields.SetField("ran", .ran)
+                        pdfFormFields.SetField("resn", .resn)
+                        pdfFormFields.SetField("rientro_previsto", .rientro_previsto)
+                        pdfFormFields.SetField("sconto", .sconto)
+                        pdfFormFields.SetField("totale", .totale)
+                        pdfFormFields.SetField("uscita", .uscita)
+                        pdfFormFields.SetField("vari", .vari)
+                        pdfFormFields.SetField("veicolo", .veicolo)
+                        pdfFormFields.SetField("voucher", .voucher)
+                        pdfFormFields.SetField("voucher_gg", .voucher_gg)
+                        pdfFormFields.SetField("voucher_n", .voucher_n)
+                        pdfFormFields.SetField("rientro", .rientro)
+                        pdfFormFields.SetField("IVA", .iva)
+                        pdfFormFields.SetField("imponibile", .imponibile)
+                        pdfFormFields.SetField("pagamenti", .pagamenti)
+                        err_n = 9
+
+                        Dim ran_img As String = .ran
+                        Dim pathfilefirma As String = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\"
+
+                        Dim statusRA As String = .statusRA   '05.05.2022
+
+
+                        If .firma Or statusRA = "8" Or statusRA = "4" Then 'verifica se contratto firmato o status 8 o 4 15.07.2022 salvo
+
+
+                            Dim filefirmaPresente As Boolean = False
+
+                            Dim Flag_filefirmaPresente As Boolean = False 'nuovo flag assoluto 06.07.2022 salvo 
+
+                            'solo x test deve verificare se c'è il file firma altrimenti lo crea SOLO x TEST
+                            If IO.File.Exists(pathfilefirma & ran_img & ".png") = False Then
+                                'IO.File.Copy(pathfilefirma & "testfilefirma.png", pathfilefirma & ran_img & ".png") 'nn presente nn la inserisce 06.07.2022 salv
+
+                            Else
+
+                                'verifica la lunghezza 13.06.2022 salvo
+                                Dim fi As FileInfo = New FileInfo(pathfilefirma & ran_img & ".png")
+                                Dim fileSizeInBytes As Long = fi.Length
+
+                                If fileSizeInBytes = 0 Then
+
+                                    'cancella il file a Zero 13.06.2022 salvo
+                                    If File.Exists(pathfilefirma & ran_img & ".png") Then
+                                        File.Delete(pathfilefirma & ran_img & ".png")
+                                    End If
+
+                                    filefirmaPresente = False    'non presente 
+                                Else
+
+                                    filefirmaPresente = True    'è presente il file firma  10.12.2021
+
+                                End If
+
+
+
+
+
+
+                            End If
+
+                            '# converti img con sfondo trasparente 09.12.2021 1551
+                            Dim firma_def As String = ran_img & ".png"
+                            If tipostampa = "rientro" Then
+                                firma_def = ran_img & "_RB.png"
+                            End If
+                            Dim firma_trasp As String = ran_img & "-trasp.png"
+                            If tipostampa = "rientro" Then
+                                firma_trasp = ran_img & "_RB-trasp.png"
+                            End If
+                            Dim path_file_firma As String = pathfilefirma & ran_img & ".png"
+                            If tipostampa = "rientro" Then
+                                firma_trasp = pathfilefirma & ran_img & "_RB.png"
+                            End If
+
+                            Dim path_file_firma_trasp As String = pathfilefirma & ran_img & "-trasp.png"
+                            If tipostampa = "rientro" Then
+                                firma_trasp = ran_img & "_RB-trasp.png"
+                                path_file_firma_trasp = pathfilefirma & firma_trasp
+                                path_file_firma = pathfilefirma & firma_def
+                            End If
+
+
+                            'verifica se è presente il filefirma originale
+                            If filefirmaPresente = True Then
+                                'se presente ...
+                                ' ... verifica se presente il filefirma Trasp (creato in precedenza) se manca lo crea  09.12.2021 1811
+                                If IO.File.Exists(path_file_firma_trasp) = False Then
+
+                                    'richiama la funzione che restituisce boolean 
+                                    'se vero converte la firma con sfondo trasparente
+                                    Dim esito_convert As Boolean = False
+                                    If IO.File.Exists(path_file_firma) = True Then
+
+                                        If statusRA = "8" Or statusRA = "4" Then
+                                            'verifica lunghezza file 
+                                            'se zero elimina e ricrea
+
+
+
+                                        End If
+
+                                        esito_convert = ConvertImgTransparent.ConvertImage(path_file_firma, path_file_firma_trasp)
+
+
+                                    Else
+                                        'se nn è presente la firma originale da convertire in trasparente 13.07.2022 salvo
+                                        'anche x status "4" 14.07.2022 salvo 
+                                        If statusRA = "8" Or statusRA = "4" Then
+                                            'NON copia il file firma di uscita 19.07.2022 salvo
+                                            'If IO.File.Exists(pathfilefirma & ran_img & "-trasp.png") = True Then 'se presente firmaTrasp Uscita
+                                            'IO.File.Copy(pathfilefirma & ran_img & "-trasp.png", pathfilefirma & ran_img & "_RB-trasp.png")
+                                            'Threading.Thread.Sleep(500)
+                                            'esito_convert = True
+                                            'End If
+                                        End If
+                                    End If
+
+
+                                    'se esito della conversione è True imposta la firma con sfondo trasparente
+                                    If esito_convert = True Then
+                                        firma_def = firma_trasp
+                                    Else 'conversione in errore con file a zero
+                                        'se le dimensioni del file firma sono = 0 allora non converte e mette quello di uscita 13.06.2022 salvo
+                                        'inserisce il file test o quello di uscita ?
+
+                                        'se presente quello di uscita mette quello
+                                        If File.Exists(pathfilefirma & ran_img & "_RA-trasp.png") Then
+                                            'copia questo 
+                                            If tipostampa = "rientro" Or statusRA = "4" Or statusRA = "8" Then '14.07.2022 aggiunto status=4
+                                                'NON copia il file firma di uscita 19.07.2022 salvo
+                                                'File.Copy(pathfilefirma & ran_img & "_RA-trasp.png", pathfilefirma & ran_img & "_RB-trasp.png")
+                                                'firma_def = ran_img & "_RB-trasp.png"
+                                            End If
+                                        Else
+                                            'altrimenti copia quello di uscita 13.07.2022 salvo
+                                            If tipostampa = "rientro" Or statusRA = "4" Or statusRA = "8" Then '14.07.2022 aggiunto status=4
+                                                'NON copia il file firma di uscita 19.07.2022 salvo
+                                                'File.Copy(pathfilefirma & "-trasp.png", pathfilefirma & ran_img & "_RB-trasp.png")
+                                                'firma_def = ran_img & "_RB-trasp.png"
+                                            End If
+                                        End If
+                                    End If
+
+                                Else
+                                    'se già presente il filefirma trasp lo imposta per la firma definitiva
+
+                                    'verifica la lunghezza 13.06.2022 salvo
+                                    Dim fi As FileInfo = New FileInfo(pathfilefirma & firma_trasp)
+                                    Dim fileSizeInBytes As Long = fi.Length
+
+                                    If fileSizeInBytes = 0 Then
+
+                                        'cancella il file a Zero 13.06.2022 salvo
+                                        If File.Exists(pathfilefirma & firma_trasp) Then
+                                            File.Delete(pathfilefirma & firma_trasp)
+                                        End If
+
+                                        'non presente 
+                                        'se presente quello di uscita mette quello
+                                        If File.Exists(pathfilefirma & ran_img & "_RA-trasp.png") Then
+                                            'copia questo 
+                                            If tipostampa = "rientro" Or statusRA = "4" Or statusRA = "8" Then '14.07.2022 aggiunto status=4
+                                                'NON copia il file firma di uscita 19.07.2022 salvo
+                                                'File.Copy(pathfilefirma & ran_img & "_RA-trasp.png", pathfilefirma & ran_img & "_RB-trasp.png")
+                                                'firma_def = ran_img & "_RB-trasp.png"
+                                            End If
+                                        Else
+                                            'altrimenti mette quello vuoto
+                                            If tipostampa = "rientro" Or statusRA = "4" Or statusRA = "8" Then '14.07.2022 aggiunto status=4
+                                                'File.Copy(pathfilefirma & "firmatest.png", pathfilefirma & ran_img & "_RB-trasp.png")
+                                                firma_def = ran_img & "_RB-trasp.png"
+                                                Flag_filefirmaPresente = False '15.07.2022
+                                            End If
+                                        End If
+
+                                    Else
+
+                                        firma_def = firma_trasp
+
+                                    End If
+
+
+
+                                End If
+                            End If
+                            'se manca il filefirma lascia il filefirmaTest
+
+                            '## end converti img con sfondo trasparente
+
+
+                            'Verifica definitiva sul file firma che viene inserito nel PDF
+                            'se il file della firma non è presente o è a lunghezza zero
+                            'viene inserito il file vuoto 14.06.2022 salvo
+                            Dim flag_insert_firma As Boolean = False        'x default è false
+                            If File.Exists(pathfilefirma & firma_def) Then 'se presente
+                                Dim fi As FileInfo = New FileInfo(pathfilefirma & firma_def)
+                                Dim fileSizeInBytes As Long = fi.Length
+                                If fileSizeInBytes > 0 Then         'se lunghezza maggiore di zero
+                                    flag_insert_firma = True        'abilita flag di inserimento firma
+                                    Flag_filefirmaPresente = True    '13.07.2022 salvo
+                                Else
+                                    firma_def = "firmatest.png"     'mette firma vuota
+                                End If
+                            Else
+                                firma_def = "firmatest.png"         'il flag di firma rimane false
+                            End If
+                            'end verifica definitiva
+
+
+                            If Flag_filefirmaPresente = True Then  'inserito 06.07.2022 salvo  Genera_documento_PDF
+
+                                If nazione = "ITALIA" Or nazione = "16" Then
+                                    If flag_insert_firma = True Then    'se flag firma true
+                                        Dim img_firma As Image
+                                        img_firma = Image.GetInstance(New Uri(HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\" & firma_def))
+                                        myPdfStamper.GetOverContent(1).AddImage(img_firma, 80, 0, 0, 40, 400, 15)
+                                        myPdfStamper.GetOverContent(1).AddImage(img_firma, 160, 0, 0, 80, 380, 130)
+                                        myPdfStamper.GetOverContent(2).AddImage(img_firma, 80, 0, 0, 50, 420, -5)
+                                    End If
+                                Else
+                                    If flag_insert_firma = True Then    'se flag firma true
+                                        Dim img_firma As Image
+                                        img_firma = Image.GetInstance(New Uri(HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath) & "\firme_contratti\pick_up\" & firma_def))
+                                        myPdfStamper.GetOverContent(1).AddImage(img_firma, 80, 0, 0, 40, 410, 15)
+                                        myPdfStamper.GetOverContent(1).AddImage(img_firma, 120, 0, 0, 60, 400, 150)
+                                        myPdfStamper.GetOverContent(2).AddImage(img_firma, 80, 0, 0, 40, 420, 40)
+                                    End If
+
+                                End If
+
+                            End If 'Flag_filefirmaPresente
+
+                        Else
+                            'se contratto nn firmato da registrazione db
+
+                        End If
+                        err_n = 10
+                    End With
+
+                    myPdfStamper.Close()
+                End Using
+
+
+                myPdfReader.Close()
+            End Using
+
+
+            GeneraDocumentoPDF = newFile
+
+
+        Catch ex As Exception
+
+            HttpContext.Current.Response.Write("Errore in GeneraDocumentoPDF:err_n_GenDOC:" & err_n & "<br/>" & ex.Message)
+            GeneraDocumentoPDF = ""
+        End Try
+
+        Return GeneraDocumentoPDF
+
+    End Function
+
+End Class
