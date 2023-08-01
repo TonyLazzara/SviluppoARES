@@ -976,6 +976,12 @@ Partial Class preventivi
         txt_sconto_new.Text = "0"
         txtSconto.Text = "0"
         lbl_imp_sconto.Text = "0"
+
+        '# salvo 01.08.2023 aggiunto - reset session in caso di cambio tariffa
+        HttpContext.Current.Session("cambiatariffanp") = ""
+        '@ end salvo 01.08.2023
+
+
         'solo x test visibili
         Dim LblVisibile As Boolean = False
 
@@ -3892,6 +3898,11 @@ Partial Class preventivi
     End Sub
 
     Protected Sub btnAnnulla0_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnAnnulla0.Click
+
+        '# salvo 01.08.2023 aggiunto - reset session in caso di cambio tariffa
+        HttpContext.Current.Session("cambiatariffanp") = ""
+        '@ end salvo 01.08.2023
+
         If tipo_preventivo.Text = "nuovo" Then
             setPadding("cerca")
 
@@ -5480,6 +5491,12 @@ Partial Class preventivi
         txt_sconto_new.Enabled = True
         txt_sconto_new.ReadOnly = False
         '@end aggiunto salvo 19.01.2023
+
+        '# aggiunto salvo 01.08.2023 per ricalcolo elemento320
+        Session("cambiatariffanp") = "ok"
+        '@end salvo 01.08.2023
+
+
 
         'ABILITO I CONTROLLI PER LA MODIFICA DELLA TARIFFA E DELLO SCONTO ED ELIMINO LE ATTUALI RIGHE DI CALCOLO
         dropTariffeGeneriche.Enabled = True
