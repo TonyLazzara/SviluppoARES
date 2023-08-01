@@ -8159,18 +8159,24 @@ Public Class funzioni_comuni
 
                         Else 'se non è in apertura preventivo o è relativo a prenotazione ma in fase di creazione allora aggiorna la riga con numero di calcolo 2
 
-                            If Rs320("num_calcolo") = 2 Then
+                            If Rs320("num_calcolo") = 2 Or HttpContext.Current.Session("cambiatariffanp") = "ok" Then
                                 'modificata salvo 23.07.2023
-                                Sql = "UPDATE " & tabella & "  SET valore_costo= valore_costo + " & Replace(Rs320("valore_costo"), ",", ".") & ", imponibile=imponibile +" & Replace(Rs320("valore_costo") / 1.22, ",", ".") & ", imponibile_scontato=imponibile_scontato +" & Replace(Rs320("valore_costo") / 1.22, ",", ".") & ", iva_imponibile = (valore_costo + " & Rs320("valore_costo") & ")- (imponibile_scontato + " & Replace(Rs320("valore_costo"), ",", ".") & "/ 1.22), iva_imponibile_scontato = (valore_costo + " & Replace(Rs320("valore_costo"), ",", ".") & ")- (imponibile_scontato + " & Replace(Rs320("valore_costo"), ",", ".") & "/ 1.22) WHERE ordine_stampa='6' AND id_documento='" & id_da_salvare & "'  AND NOT valore_costo IS NULL and num_calcolo='2' AND id_gruppo=" & id_gruppo
+                                Sql = "UPDATE " & tabella & "  SET valore_costo= valore_costo + " & Replace(Rs320("valore_costo"), ",", ".") & ", imponibile=imponibile +" & Replace(Rs320("valore_costo") / 1.22, ",", ".") & ", imponibile_scontato=imponibile_scontato +" & Replace(Rs320("valore_costo") / 1.22, ",", ".") & ", iva_imponibile = (valore_costo + " & Rs320("valore_costo") & ")- (imponibile_scontato + " & Replace(Rs320("valore_costo"), ",", ".") & "/ 1.22), iva_imponibile_scontato = (valore_costo + " & Replace(Rs320("valore_costo"), ",", ".") & ")- (imponibile_scontato + " & Replace(Rs320("valore_costo"), ",", ".") & "/ 1.22) WHERE ordine_stampa='6' AND id_documento='" & id_da_salvare & "'  AND NOT valore_costo IS NULL and num_calcolo='" & Rs320("num_calcolo") & "' AND id_gruppo=" & id_gruppo
                                 Cmd320 = New Data.SqlClient.SqlCommand(Sql, Dbc320)
                                 Dim rsql As Integer = Cmd320.ExecuteNonQuery()
+
+                                '# aggiunto salvo 01.08.2023
+                                If HttpContext.Current.Session("cambiatariffanp") = "ok" Then
+                                    HttpContext.Current.Session("cambiatariffanp") = ""
+                                End If
+                                '@ end salvo 01.08.2023
+
                             End If
 
                         End If
 
                         'HttpContext.Current.Response.Write(Sql)
                         'HttpContext.Current.Response.End()
-
 
                     Loop
 
