@@ -1,0 +1,272 @@
+﻿<%@ Master Language="VB" CodeFile="MasterPageNoMenuNoFooter.master.vb" Inherits="MasterPageNoMenu" %>
+<%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="ajaxtoolkit" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ Register Assembly="System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"	Namespace="System.Web.UI" TagPrefix="asp" %>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+      <title>ARES - Sicily Rent Car</title>
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+    
+	
+    <link rel="StyleSheet" type="text/css" href="css/style.css" />    
+
+<style type="text/css">
+                    .modalBackground 
+            { 
+                background-color: Gray; 
+                filter: alpha(opacity=50); 
+                opacity: 0.50; 
+            } 
+             
+            .updateProgress 
+            { 
+                border-width: 1px; 
+                border-style: solid; 
+                background-color: #FFFFFF; 
+                position: absolute; 
+                width: 180px; 
+                height: 65px; 
+            } 
+		ul {
+			font-family:Arial, Verdana;
+			font-size: 16px;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			/*width:1024px;*/
+            height:40px;
+            background-image:url('../img/bg_nav.jpg');
+		}
+		ul li {
+			display: block;
+			position: relative;
+			float: left;
+		}
+		li ul { display: none; }
+		ul li a {
+			display: block;
+			text-decoration: none;
+			color: #FFFFFF;
+			/*border-top: 1px solid #ffffff;*/
+			padding: 5px 15px 5px 15px;
+			/*margin-left: 1px;*/
+			white-space: nowrap;
+		}
+		
+		ul li a:hover { background: #617F8A; }
+		li:hover ul { 
+			display: block; 
+			position: absolute;
+		}
+		li:hover li { 
+			float: none;
+			font-size: 14px;
+		}
+		li:hover a { background: #617F8A;color: #FFF; }
+		li:hover li a:hover { background: #95A9B1; }
+
+	</style>	
+
+    <%--CALENDAR--%>
+     <script type="text/javascript" src="calendar/calendar.js"></script>
+     <style type="text/css">  
+        .CalendarCSS  
+        {background-color: #3a6ea5;  color:Snow;}  
+    </style>  
+
+</head>
+<script type="text/javascript" language="javascript">
+    var ModalProgress = '<%= ModalProgress.ClientID %>';
+</script>
+
+<script type="text/javascript">
+    function filterInputInt(evt) {
+        var keyCode, Char, inputField;
+        var filter = '0123456789';
+        if (window.event) {
+            keyCode = window.event.keyCode;
+            evt = window.event;
+        } else if (evt) keyCode = evt.which;
+        else return true;
+
+        inputField = evt.srcElement ? evt.srcElement : evt.target || evt.currentTarget;
+        if ((keyCode == null) || (keyCode == 0) || (keyCode == 8) || (keyCode == 9) || (keyCode == 13) || (keyCode == 27)) return true;
+        Char = String.fromCharCode(keyCode);
+        if (Char == '.') {
+            Char = ',';
+
+            if (window.event) {
+                window.event.keyCode = 44;
+            } else if (evt) evt.which = 44;
+        }
+
+        if ((filter.indexOf(Char) == -1)) return false;
+
+        var SelStart = inputField.selectionStart;
+        var SelEnd = inputField.selectionEnd;
+        var SelLenght = SelEnd - SelStart;
+
+        var stringaBase = inputField.value.substring(0, inputField.selectionStart);
+        stringaBase = stringaBase + inputField.value.substring(SelEnd, inputField.value.length);
+
+        if (Char == ',') {
+            if ((stringaBase.indexOf(Char) >= 0)) return false;
+        }
+
+    }
+
+    function filterInputDouble(evt) {
+        var keyCode, Char, inputField;
+        var filter = '0123456789,';
+        if (window.event) {
+            keyCode = window.event.keyCode;
+            evt = window.event;
+        } else if (evt) keyCode = evt.which;
+        else return true;
+
+        inputField = evt.srcElement ? evt.srcElement : evt.target || evt.currentTarget;
+        if ((keyCode == null) || (keyCode == 0) || (keyCode == 8) || (keyCode == 9) || (keyCode == 13) || (keyCode == 27)) return true;
+        Char = String.fromCharCode(keyCode);
+        if (Char == '.') {
+            Char = ',';
+
+            if (window.event) {
+                window.event.keyCode = 44;
+            } else if (evt) evt.which = 44;
+        }
+
+        if ((filter.indexOf(Char) == -1)) return false;
+
+        var SelStart = inputField.selectionStart;
+        var SelEnd = inputField.selectionEnd;
+        var SelLenght = SelEnd - SelStart;
+
+        var stringaBase = inputField.value.substring(0, inputField.selectionStart);
+        stringaBase = stringaBase + inputField.value.substring(SelEnd, inputField.value.length);
+
+        if (Char == ',') {
+            if ((inputField.value.length == 0)) return false;
+        }
+        if (Char == ',') {
+            if ((stringaBase.indexOf(Char) >= 0)) return false;
+        }
+        if (Char == ',') {
+            if ((inputField.value.length = 0)) return false;
+        }
+    }
+
+
+    function filterInputDoubleSegno(evt) {
+        var keyCode, Char, inputField;
+        var filter = '-0123456789,';
+        if (window.event) {
+            keyCode = window.event.keyCode;
+            evt = window.event;
+        } else if (evt) keyCode = evt.which;
+        else return true;
+
+        inputField = evt.srcElement ? evt.srcElement : evt.target || evt.currentTarget;
+        if ((keyCode == null) || (keyCode == 0) || (keyCode == 8) || (keyCode == 9) || (keyCode == 13) || (keyCode == 27)) return true;
+        Char = String.fromCharCode(keyCode);
+        if (Char == '.') {
+            Char = ',';
+
+            if (window.event) {
+                window.event.keyCode = 44;
+            } else if (evt) evt.which = 44;
+        }
+
+        if ((filter.indexOf(Char) == -1)) return false;
+
+        var SelStart = inputField.selectionStart;
+        var SelEnd = inputField.selectionEnd;
+        var SelLenght = SelEnd - SelStart;
+
+        var stringaBase = inputField.value.substring(0, inputField.selectionStart);
+        stringaBase = stringaBase + inputField.value.substring(SelEnd, inputField.value.length);
+
+        if (Char == ',') {
+            if ((inputField.value.length == 0)) return false;
+        }
+        if (Char == ',') {
+            if ((stringaBase.indexOf(Char) >= 0)) return false;
+        }
+
+        if (Char == '-') {
+            if ((inputField.value.length > 0)) return false;
+        }
+
+
+    }
+                            
+   </script>
+
+	
+
+
+<body topmargin="0" id="myBody" runat="server">
+    <form id="form1" runat="server">
+    <div>        
+        <div id="wrapper">
+            <!-- TOP -->
+            <div style="position:fixed;margin-top:0px;padding-top:0px;">
+            <table width="1024" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <!--<img src="img/top_70.jpg" border="0" alt="" title =""/>-->
+                    </td>
+                </tr>
+            </table>
+            <div id="topnav">
+                <ul id="menu">
+			        <li><a href="default.aspx"><img src="punto_elenco.jpg"  border="0" alt="" title="" />&nbsp;&nbsp;Home</a></li>
+		            <li><a href="LogOut.aspx"><img src="punto_elenco.jpg"  border="0" alt="" title="" />&nbsp;&nbsp;Log-Out</a></li> 
+		        </ul>
+            </div>
+            	
+		</div>
+            
+           
+             <div style="padding-top:40px;"> 
+                <script type="text/javascript" src="jsUpdateProgress.js"></script>
+               <asp:Panel ID="panelUpdateProgress" runat="server">
+                
+                 <asp:ScriptManager ID="ScriptManager1" runat="server">
+                   <Scripts>
+                      <asp:ScriptReference Path="lytebox.js" />
+                   </Scripts>
+                 </asp:ScriptManager>
+                 
+               <asp:UpdateProgress ID="UpdateProgress2" runat="server"  DisplayAfter="0" Visible="true">
+                  <ProgressTemplate>
+                        <DIV id="IMGDIV" align="center" valign="middle" runat="server" style="position: absolute;left: 50%;top: 50%;visibility:visible;vertical-align:middle;">
+                             <asp:Image ID="Image1" runat="server" ImageUrl="/images/loadingAnimation.gif" />
+                        </DIV>
+                  </ProgressTemplate>
+                </asp:UpdateProgress>
+              </asp:Panel>
+              <asp:UpdatePanel runat="server" ID="myUpdate">
+                  <ContentTemplate>
+                      <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+        
+                      </asp:ContentPlaceHolder>
+                 </ContentTemplate>
+              </asp:UpdatePanel>
+             
+             
+               
+                <ajaxToolkit:ModalPopupExtender ID="ModalProgress" 
+                    runat="server" TargetControlID="panelUpdateProgress"  
+                    BackgroundCssClass="modalBackground" PopupControlID="panelUpdateProgress" />
+                    
+            </div>
+            <!-- FOOTER -->  
+       
+        </div>               
+    </div>
+    </form>
+</body>
+</html>
+

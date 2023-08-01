@@ -1,0 +1,49 @@
+﻿<%@ Master Language="VB" CodeFile="MasterPage2.master.vb" Inherits="MasterPage2" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+        <title>ARES - Sicily Rent Car</title>
+        <link rel="icon" href="/img/favicon.ico" />
+        <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+    
+    <link rel="StyleSheet" type="text/css" href="css/style.css" />    
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>        
+        <div id="wrapper">
+            <!-- TOP -->
+            <table width="1024" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <img src="img/Top_SRC_sviluppo.png" border="0" alt="" title =""/>
+                    </td>
+                </tr>
+            </table>
+            
+           
+            
+             <!-- Codice Comune -->
+             <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+        
+            </asp:ContentPlaceHolder>
+                
+            <!-- FOOTER -->  
+            <div id="footer">
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            Footer
+                        </td>
+                    </tr>
+                </table>
+            </div>   
+        </div>               
+    </div>
+    </form>
+</body>
+</html>

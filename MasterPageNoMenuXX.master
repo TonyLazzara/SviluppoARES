@@ -1,0 +1,101 @@
+﻿<%@ Master Language="VB" CodeFile="MasterPageNoMenuXx.master.vb" Inherits="MasterPageNoMenuXx" %>
+<%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="ajaxtoolkit" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ Register Assembly="System.Web.Extensions, Version=1.0.61025.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"	Namespace="System.Web.UI" TagPrefix="asp" %>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+       <title>ARES - Sicily Rent Car</title>
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+    
+    <link rel="StyleSheet" type="text/css" href="css/style.css" />    
+</head>
+
+<style type="text/css">
+		ul {
+			font-family:Arial, Verdana;
+			font-size: 16px;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			/*width:1024px;*/
+            height:40px;
+            background-image:url('../img/bg_nav.jpg');
+		}
+		ul li {
+			display: block;
+			position: relative;
+			float: left;
+		}
+		li ul { display: none; }
+		ul li a {
+			display: block;
+			text-decoration: none;
+			color: #FFFFFF;
+			/*border-top: 1px solid #ffffff;*/
+			padding: 5px 15px 5px 15px;
+			/*margin-left: 1px;*/
+			white-space: nowrap;
+		}
+		
+		ul li a:hover { background: #617F8A; }
+		li:hover ul { 
+			display: block; 
+			position: absolute;
+		}
+		li:hover li { 
+			float: none;
+			font-size: 14px;
+		}
+		li:hover a { background: #617F8A;color: #FFF; }
+		li:hover li a:hover { background: #95A9B1; }
+
+	</style>		
+<body topmargin="0">
+    <form id="form1" runat="server">
+    <div>        
+        <div id="wrapper">
+            <!-- TOP -->
+            <div style="position:fixed;margin-top:0px;padding-top:0px;">
+            <table width="1024" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <!--<img src="img/top_70.jpg" border="0" alt="" title =""/>-->
+                    </td>
+                </tr>
+            </table>
+            <ul id="menu">
+			<li><a href="default.aspx"><img src="punto_elenco.jpg"  border="0" alt="" title="" />&nbsp;&nbsp;Home</a></li>
+		    <li><a href="LogOut.aspx"><img src="punto_elenco.jpg"  border="0" alt="" title="" />&nbsp;&nbsp;Log-Out</a></li> 
+		</ul>	
+		</div>
+            
+           
+             <div style="padding-top:40px;"> 
+                 <asp:ScriptManager ID="ScriptManager1" runat="server">
+                 </asp:ScriptManager>
+                 
+
+                      <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+        
+                      </asp:ContentPlaceHolder>
+             
+                    
+            </div>
+            <!-- FOOTER -->  
+            <div id="footer">
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            Footer
+                        </td>
+                    </tr>
+                </table>
+            </div>   
+        </div>               
+    </div>
+    </form>
+</body>
+</html>
+
