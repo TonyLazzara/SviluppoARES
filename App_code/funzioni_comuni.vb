@@ -8165,11 +8165,7 @@ Public Class funzioni_comuni
                                 Cmd320 = New Data.SqlClient.SqlCommand(Sql, Dbc320)
                                 Dim rsql As Integer = Cmd320.ExecuteNonQuery()
 
-                                '# aggiunto salvo 01.08.2023
-                                If HttpContext.Current.Session("cambiatariffanp") = "ok" Then
-                                    HttpContext.Current.Session("cambiatariffanp") = ""
-                                End If
-                                '@ end salvo 01.08.2023
+
 
                             End If
 
