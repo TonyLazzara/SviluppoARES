@@ -1779,6 +1779,12 @@ Partial Class preventivi
             End If
         Next
 
+        '# aggiunto salvo 01.08.2023
+        If HttpContext.Current.Session("cambiatariffanp") = "ok" Then
+            HttpContext.Current.Session("cambiatariffanp") = ""
+        End If
+        '@ end salvo 01.08.2023
+
         ultimo_gruppo.Text = ""
     End Sub
 
@@ -9219,7 +9225,4 @@ Partial Class preventivi
 
 
     End Sub
-
-
-
 End Class
